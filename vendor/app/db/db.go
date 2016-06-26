@@ -1,16 +1,10 @@
 package db
 
 import (
-	"crypto/md5"
-	"encoding/hex"
 	"encoding/json"
-	//"errors"
-	"fmt"
-
 	"log"
 
 	"github.com/boltdb/bolt"
-	"github.com/nu7hatch/gouuid"
 )
 
 const dbPath = "./db/leaves.db"
@@ -68,17 +62,14 @@ func GetProfile(phone string) (*Profile, error) {
 	return profile, nil
 }
 
-func UpdateProfile(uid uuid.UUID, name string, phone string) (*Profile, error) {
+func UpdateProfile(uid string, name string, phone string) (*Profile, error) {
 	db, err := bolt.Open(dbPath, 0600, nil)
 	if err != nil {
 		return nil, err
 	}
 	defer db.Close()
 
-	id := hex.EncodeToString(uid[:])
-	hash := md5.Sum([]byte(phone))
-	phoneHash := hex.EncodeToString(hash[:])
-	profile := &Profile{Uid: id, Name: name, Phone: phoneHash}
+	profile := &Profile{Uid: uid, Name: name, Phone: phone}
 
 	encoded, err := json.Marshal(profile)
 	if err != nil {

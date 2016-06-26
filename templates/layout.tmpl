@@ -13,6 +13,7 @@
       <header>
       {{ if .session }}
         logged in
+        <a href="/profile">profile</a>
         <a href="/logout">logout</a>
       {{ else }}
         <a href="/authenticate">sign in</a>

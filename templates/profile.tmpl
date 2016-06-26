@@ -1,0 +1,8 @@
+profile
+
+<form method="post" action="/profile">
+  <label>uid: {{ .uid }}</label>
+  <label>name: <input type="text" name="name" value="{{ .name }}"></label>
+  {{ .csrfField }}
+  <button type="submit">update</button>
+</form>

@@ -93,13 +93,14 @@ func CreateProfile(phone string) (*db.Profile, error) {
 		return nil, err
 	}
 
+	id := hex.EncodeToString(u[:])
 	hash := md5.Sum([]byte(phone))
 	phoneHash := hex.EncodeToString(hash[:])
 
 	profile, err := db.GetProfile(phoneHash)
 	if (err != nil) {
 		fmt.Println("NEW USER")
-		profile, err = db.UpdateProfile(*u, "???", phone)
+		profile, err = db.UpdateProfile(id, "???", phone)
 		if (err != nil) {
 			log.Fatal(err)
 		}

@@ -25,6 +25,18 @@ var routes = Routes{
 		handlers.Index,
 	},
 	Route{
+		"Profile",
+		"GET",
+		"/profile",
+		handlers.Profile,
+	},
+	Route{
+		"Profile",
+		"POST",
+		"/profile",
+		handlers.Profile,
+	},
+	Route{
 		"Directory",
 		"GET",
 		"/directory",
