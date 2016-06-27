@@ -100,12 +100,12 @@ func CreateProfile(phone string) (*db.Profile, error) {
 	profile, err := db.GetProfile(phoneHash)
 	if (err != nil) {
 		fmt.Println("NEW USER")
-		profile, err = db.UpdateProfile(id, "???", phone)
+		profile, err = db.UpdateProfile(id, "???", phoneHash)
 		if (err != nil) {
 			log.Fatal(err)
 		}
 	} else {
-		fmt.Println("FOUND USER ", *profile)
+		fmt.Println("FOUND USER ", *profile, "\n", profile)
 	}
 
 	return profile, nil
