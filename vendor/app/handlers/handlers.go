@@ -12,8 +12,10 @@ import (
 	"app/utils"
 )
 
-var r = utils.GetRender()
-var s = utils.GetSession()
+var (
+	r = utils.GetRender()
+	s = utils.GetSession()
+)
 
 func Index(w http.ResponseWriter, req *http.Request) {
 	session, err := s.Get(req, "uid")
