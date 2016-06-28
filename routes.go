@@ -1,11 +1,9 @@
-package routes
+package main
 
 import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-
-	"app/handlers"
 )
 
 type Route struct {
@@ -22,58 +20,57 @@ var routes = Routes{
 		"Index",
 		"GET",
 		"/",
-		handlers.Index,
+		Index,
 	},
 	Route{
 		"Profile",
 		"GET",
 		"/profile",
-		handlers.Profile,
+		Profile,
 	},
 	Route{
 		"Profile",
 		"POST",
 		"/profile",
-		handlers.Profile,
+		Profile,
 	},
 	Route{
 		"Directory",
 		"GET",
 		"/directory",
-		handlers.Directory,
+		Directory,
 	},
 	Route{
 		"Authenticate",
 		"GET",
 		"/authenticate",
-		handlers.Authenticate,
+		Authenticate,
 	},
 	Route{
 		"Authenticate",
 		"POST",
 		"/authenticate",
-		handlers.Authenticate,
+		Authenticate,
 	},
 	Route{
 		"Validate",
 		"GET",
 		"/validate",
-		handlers.Validate,
+		Validate,
 	},
 	Route{
 		"Validate",
 		"POST",
 		"/validate",
-		handlers.Validate,
+		Validate,
 	},
 	Route{
 		"Logout",
 		"GET",
 		"/logout",
-		handlers.Logout,
+		Logout,
 	},
 }
-
 
 func NewRouter() *mux.Router {
 	router := mux.NewRouter().StrictSlash(true)

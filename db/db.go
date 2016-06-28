@@ -7,7 +7,7 @@ import (
 	"github.com/boltdb/bolt"
 )
 
-const dbPath = "./db/leaves.db"
+const dbPath = "./boltdb/leaves.db"
 
 type Profile struct {
 	Uid		string

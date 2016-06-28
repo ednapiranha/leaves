@@ -14,8 +14,7 @@ import (
 	"github.com/patrickmn/go-cache"
 	"github.com/sfreiberg/gotwilio"
 
-	"app/db"
-	"app/utils"
+	"github.com/revolting/leaves/db"
 )
 
 // 5 minute cache for pin
@@ -62,10 +61,9 @@ func fixPhone(phone string) string {
 	return number
 }
 
-func SendPin(phone string) string {
-	flags := utils.GetFlags()
-	twilio := gotwilio.NewTwilioClient(flags.TwilioSid, flags.TwilioToken)
-	from := flags.TwilioPhone
+func SendPin(twilioSid string, twilioToken string, twilioPhone string, phone string) string {
+	twilio := gotwilio.NewTwilioClient(twilioSid, twilioToken)
+	from := twilioPhone
 	to := fixPhone(phone)
 	pin := generatePin()
 	message := "Your PIN: " + pin

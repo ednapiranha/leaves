@@ -1,4 +1,4 @@
-package handlers
+package main
 
 import (
 	"fmt"
@@ -7,14 +7,8 @@ import (
 
 	"github.com/gorilla/csrf"
 
-	"app/authenticate"
-	"app/db"
-	"app/utils"
-)
-
-var (
-	r = utils.GetRender()
-	s = utils.GetSession()
+	"github.com/revolting/leaves/authenticate"
+	"github.com/revolting/leaves/db"
 )
 
 func Index(w http.ResponseWriter, req *http.Request) {
@@ -94,7 +88,7 @@ func Authenticate(w http.ResponseWriter, req *http.Request) {
 		}
 
 		decoder := req.FormValue("phone")
-		phone := authenticate.SendPin(decoder)
+		phone := authenticate.SendPin(*twilioSid, *twilioToken, *twilioPhone, decoder)
 		session.Values["phone"] = phone;
 		session.Save(req, w)
 
