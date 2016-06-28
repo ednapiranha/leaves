@@ -7,23 +7,17 @@ import (
 	"github.com/boltdb/bolt"
 )
 
-const dbPath = "./boltdb/leaves.db"
-
 type Profile struct {
 	Uid		string
 	Name	string
 	Phone	string
 }
 
-var db *bolt.DB
-
-func init() {
-	d, err := bolt.Open(dbPath, 0600, nil)
+func NewDB(dbPath string) *bolt.DB {
+	db, err := bolt.Open(dbPath, 0600, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	db = d
 
 	err = db.Update(func(tx *bolt.Tx) error {
 		_, err := tx.CreateBucketIfNotExists([]byte("Profile"))
@@ -36,9 +30,11 @@ func init() {
 	if (err != nil) {
 		log.Fatal(err)
 	}
+
+	return db
 }
 
-func GetProfile(phone string) (*Profile, error) {
+func GetProfile(phone string, db *bolt.DB) (*Profile, error) {
 	var profile *Profile
 
 	err := db.View(func(tx *bolt.Tx) error {
@@ -59,7 +55,7 @@ func GetProfile(phone string) (*Profile, error) {
 	return profile, nil
 }
 
-func UpdateProfile(uid string, name string, phone string) (*Profile, error) {
+func UpdateProfile(uid string, name string, phone string, db *bolt.DB) (*Profile, error) {
 	profile := &Profile{Uid: uid, Name: name, Phone: phone}
 
 	encoded, err := json.Marshal(profile)

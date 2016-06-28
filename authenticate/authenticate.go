@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/boltdb/bolt"
 	"github.com/nu7hatch/gouuid"
 	"github.com/patrickmn/go-cache"
 	"github.com/sfreiberg/gotwilio"
@@ -84,7 +85,7 @@ func ValidatePin(pin string, phone string) bool {
 	return false
 }
 
-func CreateProfile(phone string) (*db.Profile, error) {
+func CreateProfile(phone string, d *bolt.DB) (*db.Profile, error) {
 	u, err := uuid.NewV4()
 	if (err != nil) {
 		log.Fatal(err)
@@ -95,10 +96,10 @@ func CreateProfile(phone string) (*db.Profile, error) {
 	hash := md5.Sum([]byte(phone))
 	phoneHash := hex.EncodeToString(hash[:])
 
-	profile, err := db.GetProfile(phoneHash)
+	profile, err := db.GetProfile(phoneHash, d)
 	if (err != nil) {
 		fmt.Println("NEW USER")
-		profile, err = db.UpdateProfile(id, "???", phoneHash)
+		profile, err = db.UpdateProfile(id, "???", phoneHash, d)
 		if (err != nil) {
 			log.Fatal(err)
 		}

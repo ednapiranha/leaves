@@ -10,6 +10,8 @@ import (
 	"github.com/unrolled/render"
 	"github.com/unrolled/secure"
 	"github.com/urfave/negroni"
+
+	"github.com/revolting/leaves/db"
 )
 
 var (
@@ -20,6 +22,7 @@ var (
 	twilioPhone		= flag.String("twilioPhone", "+15555555", "Twilio phone number")
 	cookieSecret	= flag.String("cookie", "secret", "Session cookie secret")
 	csrfSecret		= flag.String("csrfSecret", "something-that-is-32-bytes------", "CSRF secret")
+	dbPath			= flag.String("db", "./boltdb/leaves.db", "Database path")
 	s				= sessions.NewCookieStore([]byte(*cookieSecret))
 
 	r				= render.New(render.Options{
@@ -28,25 +31,8 @@ var (
 						Layout: "layout",
 						IsDevelopment: *isDev,
 					})
+	d				= db.NewDB(*dbPath)
 )
-
-type Flag struct {
-	HttpPort		string
-	IsDev			bool
-	TwilioSid		string
-	TwilioToken		string
-	TwilioPhone		string
-	CookieSecret	string
-	CsrfSecret		string
-}
-
-var flags = &Flag{HttpPort: *httpPort,
-	IsDev: *isDev,
-	TwilioSid: *twilioSid,
-	TwilioToken: *twilioToken,
-	TwilioPhone: *twilioPhone,
-	CookieSecret: *cookieSecret,
-	CsrfSecret: *csrfSecret}
 
 func main() {
 	flag.Parse()

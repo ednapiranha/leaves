@@ -53,7 +53,7 @@ func Profile(w http.ResponseWriter, req *http.Request) {
 		uid := session.Values["uid"].(string)
 		phone := session.Values["phone"].(string)
 
-		profile, err := db.UpdateProfile(uid, name, phone)
+		profile, err := db.UpdateProfile(uid, name, phone, d)
 		if (err != nil) {
 			log.Fatal(err)
 		}
@@ -113,7 +113,7 @@ func Validate(w http.ResponseWriter, req *http.Request) {
 		pinVerify := authenticate.ValidatePin(pin, phone)
 
 		if (pinVerify) {
-			profile, err := authenticate.CreateProfile(phone)
+			profile, err := authenticate.CreateProfile(phone, d)
 			if (err != nil) {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
