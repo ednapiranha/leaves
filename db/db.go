@@ -15,9 +15,7 @@ type Profile struct {
 }
 
 type Strains struct {
-	Data []struct {
-		Strain
-	}
+	Data []*Strain
 	Meta struct {
 		Pagination struct {
 			Total		int `json:"total"`
@@ -139,7 +137,7 @@ func UpdateStrain(strain *Strain, db *bolt.DB) error {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("**************************** ", strain, strain.Ucpc)
+	fmt.Println("**************************** ", strain.Name, strain.Ucpc)
 
 	err = db.Update(func(tx *bolt.Tx) error {
 		p := tx.Bucket([]byte("Strain"))

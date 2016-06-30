@@ -22,7 +22,7 @@ func main() {
 	//fmt.Println(strains.Data)
 
 	for _, v := range strains.Data{
-		err := db.UpdateStrain(&v, d)
+		err := db.UpdateStrain(v, d)
 		if (err != nil) {
 			fmt.Println("could not update strain ", v.Name)
 		}
@@ -37,5 +37,4 @@ func GetData(url string) error {
 	defer r.Body.Close()
 
 	return json.NewDecoder(r.Body).Decode(&strains)
-	//db.UpdateStrain(strain *Strain, d)
 }
