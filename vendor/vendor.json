@@ -67,6 +67,12 @@
 			"revisionTime": "2016-01-23T00:08:10Z"
 		},
 		{
+			"checksumSHA1": "iydUphwYqZRq3WhstEdGsbvBAKs=",
+			"path": "github.com/stretchr/testify/assert",
+			"revision": "d77da356e56a7428ad25149ca77381849a6a5232",
+			"revisionTime": "2016-06-15T09:26:46Z"
+		},
+		{
 			"checksumSHA1": "CzcsA3k48nSAuoOkDO9PU/sp/no=",
 			"path": "github.com/unrolled/render",
 			"revision": "198ad4d8b8a4612176b804ca10555b222a086b40",
