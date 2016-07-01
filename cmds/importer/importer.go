@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"net/http"
 	"time"
@@ -14,7 +15,15 @@ var strains *db.Strains
 var d = db.NewDB("./boltdb/leaves.db")
 var currUrl = "https://www.cannabisreports.com/api/v1.0/strains?page=1"
 
+var pageStart = flag.String("page", "1", "Page")
+
 func main() {
+	flag.Parse()
+
+	if (*pageStart != "1") {
+		currUrl = "https://www.cannabisreports.com/api/v1.0/strains?page=" + *pageStart
+	}
+
 	GetData(currUrl)
 	defer d.Close()
 

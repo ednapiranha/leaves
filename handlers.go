@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/csrf"
 
@@ -77,14 +78,42 @@ func Profile(w http.ResponseWriter, req *http.Request) {
 }
 
 func Directory(w http.ResponseWriter, req *http.Request) {
-	strains, err := db.GetAllStrains(d)
+	page := 1
+	prev := "1"
+
+	p := req.URL.Query().Get("page")
+	if (p != "") {
+		pg, err := strconv.Atoi(p)
+		if (err != nil) {
+			page = 1
+		} else {
+			page = pg
+		}
+	}
+
+	next := strconv.Itoa(page + 1)
+	prevInt := page - 1
+
+	if (prevInt >= 1) {
+		prev = strconv.Itoa(prevInt)
+	}
+
+	strains, err := db.GetAllStrains(page, d)
 	if (err != nil) {
 		log.Fatal(err)
 	}
 
+	if (len(strains) < db.GetLimit()) {
+		next = strconv.Itoa(page)
+	}
+
+	fmt.Println(len(strains))
+
 	r.HTML(w, http.StatusOK, "directory", map[string]interface{}{
 		"session": s,
 		"strains": strains,
+		"prev": prev,
+		"next": next,
 	})
 }
 

@@ -7,6 +7,8 @@ import (
 	"github.com/asdine/storm"
 )
 
+const limit = 20
+
 type Profile struct {
 	Uid		string `storm:"id"`
 	Name	string
@@ -69,6 +71,10 @@ func Close(db *storm.DB) {
 	db.Close()
 }
 
+func GetLimit() int {
+	return limit
+}
+
 func GetProfile(phone string, db *storm.DB) (Profile, error) {
 	var profile Profile
 
@@ -96,10 +102,16 @@ func UpdateStrain(strain Strain, db *storm.DB) error {
 	return nil
 }
 
-func GetAllStrains(db *storm.DB) ([]Strain, error) {
+func GetAllStrains(page int, db *storm.DB) ([]Strain, error) {
 	var strains []Strain
 
-	err := db.AllByIndex("Name", &strains, storm.Limit(10))
+	page = page - 1
+
+	if (page < 0) {
+		page = 0
+	}
+
+	err := db.AllByIndex("Name", &strains, storm.Limit(limit), storm.Skip(page * limit))
 	if (err != nil) {
 		return strains, err
 	}

@@ -5,3 +5,8 @@ directory of strains
     <li>{{.Name}}</li>
   {{end}}
 </ul>
+
+<div id="pagination">
+  <a href="/directory?page={{ .prev }}">Prev</a>
+  <a href="/directory?page={{ .next }}">Next</a>
+</div>
