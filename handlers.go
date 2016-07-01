@@ -76,7 +76,15 @@ func Profile(w http.ResponseWriter, req *http.Request) {
 }
 
 func Directory(w http.ResponseWriter, req *http.Request) {
-	r.HTML(w, http.StatusOK, "directory", nil)
+	strains, err := db.GetAllStrains(d)
+	if (err != nil) {
+		log.Fatal(err)
+	}
+
+	r.HTML(w, http.StatusOK, "directory", map[string]interface{}{
+		"session": s,
+		"strains": strains.Data,
+	})
 }
 
 func Authenticate(w http.ResponseWriter, req *http.Request) {

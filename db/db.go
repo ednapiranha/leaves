@@ -18,15 +18,20 @@ type Strains struct {
 	Data []*Strain
 	Meta struct {
 		Pagination struct {
-			Total		int `json:"total"`
-			Count		int `json:"count"`
-			Per_page	int `json:"perPage"`
-			Total_pages int `json:"totalPages"`
+			Total			int `json:"total"`
+			Count			int `json:"count"`
+			Per_Page		int `json:"per_page"`
+			Current_Page	int `json:"current_page"`
+			Total_Pages 	int `json:"total_pages"`
 			Links struct {
-				Next	string `json:"next"`
+				Next		string `json:"next"`
 			}
 		}
 	}
+}
+
+type StrainData struct {
+	Data []Strain
 }
 
 type Strain struct {
@@ -137,12 +142,12 @@ func UpdateStrain(strain *Strain, db *bolt.DB) error {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("**************************** ", strain.Name, strain.Ucpc)
+	fmt.Println("* added: ", strain.Name, strain.Ucpc)
 
 	err = db.Update(func(tx *bolt.Tx) error {
-		p := tx.Bucket([]byte("Strain"))
+		s := tx.Bucket([]byte("Strain"))
 
-		return p.Put([]byte(strain.Ucpc), encoded)
+		return s.Put([]byte(strain.Ucpc), encoded)
 	})
 
 	if (err != nil) {
@@ -150,4 +155,39 @@ func UpdateStrain(strain *Strain, db *bolt.DB) error {
 	}
 
 	return nil
+}
+
+func (s *StrainData) AppendStrain(strain Strain) []Strain {
+	s.Data = append(s.Data, strain)
+	return s.Data
+}
+
+func GetAllStrains(db *bolt.DB) (StrainData, error) {
+	var strain Strain
+	strains := []Strain{}
+	strn := StrainData{strains}
+
+	err := db.View(func(tx *bolt.Tx) error {
+		s := tx.Bucket([]byte("Strain"))
+		c := s.Cursor()
+
+		for k, v := c.First(); k != nil; k, v = c.Next() {
+			fmt.Println("+++++++++++++++++++++++ ", k)
+			err := json.Unmarshal(v, &strain)
+			if (err != nil) {
+				log.Fatal(err)
+			}
+
+			strn.AppendStrain(strain)
+
+			fmt.Println(strn.Data)
+		}
+		return nil
+	})
+
+	if (err != nil) {
+		return strn, err
+	}
+
+	return strn, nil
 }
