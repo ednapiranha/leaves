@@ -3,6 +3,7 @@ package db
 import (
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/asdine/storm"
 )
@@ -11,8 +12,8 @@ const limit = 20
 
 type Profile struct {
 	Uid		string `storm:"id"`
-	Name	string
-	Phone	string
+	Name	string `json:"name"`
+	Phone	string `json:"phone"`
 }
 
 type Strains struct {
@@ -55,8 +56,20 @@ type Strain struct {
 	Lineage		map[string]interface{} `json:"lineage"`
 	Children	map[string]interface{} `json:"-"`
 	Reviews		map[string]interface{} `json:"-"`
-	CreatedAt	map[string]interface{} `storm:"index"`
-	UpdatedAt	map[string]interface{} `storm:"index"`
+	CreatedAt	map[string]interface{} `json:"createdAt"`
+	UpdatedAt	map[string]interface{} `json:"updatedAt"`
+}
+
+type Review struct {
+	Rid			string `storm:"id"`
+	Uid			string `storm:"index"`
+	Group		string `storm:"index"`
+	FiveMin		string `json:"fiveMin"`
+	TenMin		string `json:"tenMin"`
+	FifteenMin	string `json:"fifteenMin"`
+	TwentyMin	string `json:"twentyMin"`
+	Comments	string `json:"comments"`
+	CreatedAt	time.Time `json:"createdAt"`
 }
 
 func NewDB(dbPath string) *storm.DB {
@@ -116,4 +129,54 @@ func GetAllStrains(page int, db *storm.DB) ([]Strain, error) {
 		return strains, err
 	}
 	return strains, nil
+}
+
+func UpdateReview(reviewStrain Review, reviewFeed Review, db *storm.DB) error {
+	tx, err := db.Begin(true)
+
+	err = db.Save(&reviewStrain)
+	if (err != nil) {
+		tx.Rollback()
+		return err
+	}
+
+	err = db.Save(&reviewFeed)
+	if (err != nil) {
+		tx.Rollback()
+		return err
+	}
+
+	tx.Commit()
+
+	return nil
+}
+
+func GetReviewsByStrain(id string, db *storm.DB) ([]Review, error) {
+	var reviews []Review
+
+	err := db.Find("Group", "strain", &reviews, storm.Limit(limit))
+	if (err != nil) {
+		return reviews, err
+	}
+	return reviews, nil
+}
+
+func GetReviewsByUser(uid string, db *storm.DB) ([]Review, error) {
+	var reviews []Review
+
+	err := db.Find("Uid", uid, &reviews, storm.Limit(limit))
+	if (err != nil) {
+		return reviews, err
+	}
+	return reviews, nil
+}
+
+func GetReviewsByFeed(db *storm.DB) ([]Review, error) {
+	var reviews []Review
+
+	err := db.Find("Group", "feed", &reviews, storm.Limit(limit))
+	if (err != nil) {
+		return reviews, err
+	}
+	return reviews, nil
 }
