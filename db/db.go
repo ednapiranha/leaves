@@ -1,15 +1,14 @@
 package db
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 
-	"github.com/boltdb/bolt"
+	"github.com/asdine/storm"
 )
 
 type Profile struct {
-	Uid		string
+	Uid		string `storm:"id"`
 	Name	string
 	Phone	string
 }
@@ -30,13 +29,9 @@ type Strains struct {
 	}
 }
 
-type StrainData struct {
-	Data []Strain
-}
-
 type Strain struct {
-	Name	string `json:"name"`
-	Ucpc	string `json:"ucpc"`
+	Name	string `storm:"index"`
+	Ucpc	string `storm:"id"`
 	Link	string `json:"link"`
 	Qr		string `json:"-"`
 	Url		string `json:"url"`
@@ -53,141 +48,60 @@ type Strain struct {
 		Link	string `json:"link"`
 	}
 	*/
-	SeedCompany	map[string]interface{} `json:"seedCompany"`
+	SeedCompany	map[string]interface{} `storm:"index"`
 	Genetics	map[string]interface{} `json:"genetics"`
 	Lineage		map[string]interface{} `json:"lineage"`
 	Children	map[string]interface{} `json:"-"`
 	Reviews		map[string]interface{} `json:"-"`
-	CreatedAt	map[string]interface{} `json:"createdAt"`
-	UpdatedAt	map[string]interface{} `json:"updatedAt"`
+	CreatedAt	map[string]interface{} `storm:"index"`
+	UpdatedAt	map[string]interface{} `storm:"index"`
 }
 
-func NewDB(dbPath string) *bolt.DB {
-	db, err := bolt.Open(dbPath, 0600, nil)
+func NewDB(dbPath string) *storm.DB {
+	db, err := storm.Open(dbPath)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	err = db.Update(func(tx *bolt.Tx) error {
-		_, err := tx.CreateBucketIfNotExists([]byte("Profile"))
-		if (err != nil) {
-			log.Fatal(err)
-		}
-		return nil
-	})
-
-	if (err != nil) {
-		log.Fatal(err)
-	}
-
-	err = db.Update(func(tx *bolt.Tx) error {
-		_, err := tx.CreateBucketIfNotExists([]byte("Strain"))
-		if (err != nil) {
-			log.Fatal(err)
-		}
-		return nil
-	})
-
-	if (err != nil) {
-		log.Fatal(err)
-	}
-
 	return db
 }
 
-func GetProfile(phone string, db *bolt.DB) (*Profile, error) {
-	var profile *Profile
+func Close(db *storm.DB) {
+	db.Close()
+}
 
-	err := db.View(func(tx *bolt.Tx) error {
-		p := tx.Bucket([]byte("Profile"))
-		acct := p.Get([]byte(phone))
+func GetProfile(phone string, db *storm.DB) (Profile, error) {
+	var profile Profile
 
-		err := json.Unmarshal(acct, &profile)
-		if (err != nil) {
-			return err
-		}
-		return nil
-	})
-
+	err := db.One("Phone", phone, &profile)
 	if (err != nil) {
-		return nil, err
+		return profile, err
 	}
-
 	return profile, nil
 }
 
-func UpdateProfile(uid string, name string, phone string, db *bolt.DB) (*Profile, error) {
-	profile := &Profile{Uid: uid, Name: name, Phone: phone}
-
-	encoded, err := json.Marshal(profile)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	err = db.Update(func(tx *bolt.Tx) error {
-		p := tx.Bucket([]byte("Profile"))
-
-		return p.Put([]byte(profile.Phone), encoded)
-	})
-
+func UpdateProfile(profile Profile, db *storm.DB) (Profile, error) {
+	err := db.Save(&profile)
 	if (err != nil) {
-		return nil, err
+		return profile, err
 	}
-	println("returning profile ", profile)
 	return profile, err
 }
 
-func UpdateStrain(strain *Strain, db *bolt.DB) error {
-	encoded, err := json.Marshal(strain)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println("* added: ", strain.Name, strain.Ucpc)
-
-	err = db.Update(func(tx *bolt.Tx) error {
-		s := tx.Bucket([]byte("Strain"))
-
-		return s.Put([]byte(strain.Ucpc), encoded)
-	})
-
+func UpdateStrain(strain Strain, db *storm.DB) error {
+	err := db.Save(&strain)
 	if (err != nil) {
+		fmt.Println(err)
 		return err
 	}
-
 	return nil
 }
 
-func (s *StrainData) AppendStrain(strain Strain) []Strain {
-	s.Data = append(s.Data, strain)
-	return s.Data
-}
+func GetAllStrains(db *storm.DB) ([]Strain, error) {
+	var strains []Strain
 
-func GetAllStrains(db *bolt.DB) (StrainData, error) {
-	var strain Strain
-	strains := []Strain{}
-	strn := StrainData{strains}
-
-	err := db.View(func(tx *bolt.Tx) error {
-		s := tx.Bucket([]byte("Strain"))
-		c := s.Cursor()
-
-		for k, v := c.First(); k != nil; k, v = c.Next() {
-			fmt.Println("+++++++++++++++++++++++ ", k)
-			err := json.Unmarshal(v, &strain)
-			if (err != nil) {
-				log.Fatal(err)
-			}
-
-			strn.AppendStrain(strain)
-
-			fmt.Println(strn.Data)
-		}
-		return nil
-	})
-
+	err := db.AllByIndex("Name", &strains, storm.Limit(10))
 	if (err != nil) {
-		return strn, err
+		return strains, err
 	}
-
-	return strn, nil
+	return strains, nil
 }

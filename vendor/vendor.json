@@ -7,6 +7,30 @@
 			"revision": ""
 		},
 		{
+			"checksumSHA1": "Y4+vktInQLXZfWQczi5MAlTNwA8=",
+			"path": "github.com/asdine/storm",
+			"revision": "6e68f8e0b4e06912498cd60a1ca508bdf5ae013f",
+			"revisionTime": "2016-06-21T23:47:29Z"
+		},
+		{
+			"checksumSHA1": "aQESx3hU/Uxtil7yZ6n1Z52dPWc=",
+			"path": "github.com/asdine/storm/codec",
+			"revision": "6e68f8e0b4e06912498cd60a1ca508bdf5ae013f",
+			"revisionTime": "2016-06-21T23:47:29Z"
+		},
+		{
+			"checksumSHA1": "chA9GIwVHlM+sF9I/8afnJoy2c0=",
+			"path": "github.com/asdine/storm/codec/gob",
+			"revision": "6e68f8e0b4e06912498cd60a1ca508bdf5ae013f",
+			"revisionTime": "2016-06-21T23:47:29Z"
+		},
+		{
+			"checksumSHA1": "RtgNq48XEw3W7y8Cd0LE3S9fJYQ=",
+			"path": "github.com/asdine/storm/index",
+			"revision": "6e68f8e0b4e06912498cd60a1ca508bdf5ae013f",
+			"revisionTime": "2016-06-21T23:47:29Z"
+		},
+		{
 			"checksumSHA1": "CIaQq8mfGNZbWy7kmDAJkXE+Xtc=",
 			"path": "github.com/boltdb/bolt",
 			"revision": "3f7947a25d970e1e5f512276c14d5dcf731ccd5e",

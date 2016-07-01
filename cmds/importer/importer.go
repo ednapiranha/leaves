@@ -16,6 +16,7 @@ var currUrl = "https://www.cannabisreports.com/api/v1.0/strains?page=1"
 
 func main() {
 	GetData(currUrl)
+	defer d.Close()
 
 	rate := time.Millisecond * 1500
 	throttle := time.Tick(rate)
@@ -38,7 +39,7 @@ func GetData(url string) {
 
 func Update() {
 	for _, v := range strains.Data{
-		err := db.UpdateStrain(v, d)
+		err := db.UpdateStrain(*v, d)
 		if (err != nil) {
 			fmt.Println("could not update strain ", v.Name)
 		}

@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/boltdb/bolt"
+	"github.com/asdine/storm"
 	"github.com/nu7hatch/gouuid"
 	"github.com/patrickmn/go-cache"
 	"github.com/sfreiberg/gotwilio"
@@ -85,11 +85,10 @@ func ValidatePin(pin string, phone string) bool {
 	return false
 }
 
-func CreateProfile(phone string, d *bolt.DB) (*db.Profile, error) {
+func CreateProfile(phone string, d *storm.DB) (db.Profile, error) {
 	u, err := uuid.NewV4()
 	if (err != nil) {
 		log.Fatal(err)
-		return nil, err
 	}
 
 	id := hex.EncodeToString(u[:])
@@ -99,12 +98,13 @@ func CreateProfile(phone string, d *bolt.DB) (*db.Profile, error) {
 	profile, err := db.GetProfile(phoneHash, d)
 	if (err != nil) {
 		fmt.Println("NEW USER")
-		profile, err = db.UpdateProfile(id, "???", phoneHash, d)
+		p := &db.Profile{Uid: id, Name: "???", Phone: phoneHash}
+		profile, err = db.UpdateProfile(*p, d)
 		if (err != nil) {
 			log.Fatal(err)
 		}
 	} else {
-		fmt.Println("FOUND USER ", *profile, "\n", profile)
+		fmt.Println("FOUND USER ", profile, "\n", profile)
 	}
 
 	return profile, nil

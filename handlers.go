@@ -53,7 +53,8 @@ func Profile(w http.ResponseWriter, req *http.Request) {
 		uid := session.Values["uid"].(string)
 		phone := session.Values["phone"].(string)
 
-		profile, err := db.UpdateProfile(uid, name, phone, d)
+		p := &db.Profile{Uid: uid, Name: name, Phone: phone}
+		profile, err := db.UpdateProfile(*p, d)
 		if (err != nil) {
 			log.Fatal(err)
 		}
@@ -83,7 +84,7 @@ func Directory(w http.ResponseWriter, req *http.Request) {
 
 	r.HTML(w, http.StatusOK, "directory", map[string]interface{}{
 		"session": s,
-		"strains": strains.Data,
+		"strains": strains,
 	})
 }
 
