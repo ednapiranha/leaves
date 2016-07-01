@@ -47,7 +47,7 @@ func main() {
 	)
 
 	csp := secure.New(secure.Options{
-		AllowedHosts: []string{"localhost" + *httpPort, "fonts.googleapis.com"},
+		AllowedHosts: []string{"localhost" + *httpPort, "leaves.revolting.me", "fonts.googleapis.com"},
 		FrameDeny: true,
 		IsDevelopment: *isDev,
 	})
