@@ -48,10 +48,43 @@ table {
 }
 
 body {
-  background-color: #f1f1f1;
+  background-color: #fff;
   font-family: Lekton;
 }
 
 #wrapper {
   padding: 20px;
+}
+
+header {
+  padding: 0 20px;
+  background-color: #111;
+}
+
+header a {
+  text-decoration: none;
+  padding: 10px;
+  display: inline-block;
+  color: #f1f1f1;
+}
+
+header a:hover {
+  background-color: #aaa;
+  color: #111;
+}
+
+h1 {
+  margin: 20px 0;
+  font-size: 1.8rem;
+}
+
+#strains li {
+  margin: 3px;
+  padding: 3px 5px;
+  background-color: #74ffe6;
+}
+
+#pagination {
+  margin: 20px 0;
+  padding: 5px;
 }

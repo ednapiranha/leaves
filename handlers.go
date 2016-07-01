@@ -22,7 +22,7 @@ func Index(w http.ResponseWriter, req *http.Request) {
 	s := false
 
 	if (session.Values["uid"] != nil) {
-		fmt.Println(*session)
+		fmt.Println(session.Values["uid"])
 		s = true
 	}
 
@@ -41,7 +41,7 @@ func Profile(w http.ResponseWriter, req *http.Request) {
 	s := false
 
 	if (session.Values["uid"] != nil) {
-		fmt.Println(*session)
+		fmt.Println(session.Values["uid"])
 		s = true
 	}
 
@@ -78,6 +78,19 @@ func Profile(w http.ResponseWriter, req *http.Request) {
 }
 
 func Directory(w http.ResponseWriter, req *http.Request) {
+	session, err := s.Get(req, "uid")
+	if (err != nil) {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	s := false
+
+	if (session.Values["uid"] != nil) {
+		fmt.Println(session.Values["uid"])
+		s = true
+	}
+
 	page := 1
 	prev := "1"
 

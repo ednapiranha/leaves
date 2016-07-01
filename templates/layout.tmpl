@@ -9,17 +9,16 @@
     <link rel="stylesheet" type="text/css" href="media/css/main.css">
   </head>
   <body>
+    <header>
+      <a href="/directory">directory</a>
+    {{ if .session }}
+      <a href="/profile">profile</a>
+      <a href="/logout">logout</a>
+    {{ else }}
+      <a href="/authenticate">sign in</a>
+    {{ end }}
+    </header>
     <div id="wrapper">
-      <header>
-      {{ if .session }}
-        logged in
-        <a href="/profile">profile</a>
-        <a href="/logout">logout</a>
-      {{ else }}
-        <a href="/authenticate">sign in</a>
-      {{ end }}
-      </header>
-
       {{ yield }}
     </div>
   </body>
