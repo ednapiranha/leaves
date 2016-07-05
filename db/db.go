@@ -17,7 +17,7 @@ type Profile struct {
 }
 
 type Strains struct {
-	Data []*Strain
+	Data []*StrainClean
 	Meta struct {
 		Pagination struct {
 			Total        int `json:"total"`
@@ -43,7 +43,6 @@ type Strain struct {
 	SeedCompanyName string                 `storm:"index"`
 	SeedCompanyUcpc string                 `storm:"index"`
 	Genetics        map[string]interface{} `json:"genetics"`
-	GeneticsNames   string                 `json:"geneticsNames"`
 	GeneticsUcpc    string                 `json:"geneticsUcpc"`
 	Lineage         map[string]interface{} `json:"lineage"`
 	Children        map[string]interface{} `json:"-"`
@@ -65,7 +64,7 @@ type StrainClean struct {
 		Link string `json:"-"`
 	}
 	Genetics struct {
-		Names string `json:"names"`
+		Names string `json:"-"`
 		Ucpc  string `json:"ucpc"`
 		Link  string `json:"-"`
 	}

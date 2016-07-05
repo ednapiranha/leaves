@@ -2,7 +2,10 @@
 
 <ul id="strains">
   {{range .strains}}
-    <li>{{.Name}} - {{.SeedCompanyName}} {{.SeedCompanyUcpc}}</li>
+    <li>
+      <h2>{{.Name}}</h2>
+      <p>Seed company: {{.SeedCompanyName}}</p>
+    </li>
   {{end}}
 </ul>
 
