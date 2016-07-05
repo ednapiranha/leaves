@@ -33,31 +33,47 @@ type Strains struct {
 }
 
 type Strain struct {
-	Name  string `storm:"index"`
-	Ucpc  string `storm:"id"`
-	Link  string `json:"link"`
-	Qr    string `json:"-"`
-	Url   string `json:"url"`
-	Image string `json:"image"`
-	/*
-		SeedCompany struct {
-			Name	string `json:"name"`
-			Ucpc	string `json:"ucpc"`
-			Link	string `json:"link"`
-		}
-		Genetics struct {
-			Names	string `json:"names"`
-			Ucpc	string `json:"ucpc"`
-			Link	string `json:"link"`
-		}
-	*/
-	SeedCompany map[string]interface{} `storm:"index"`
-	Genetics    map[string]interface{} `json:"genetics"`
-	Lineage     map[string]interface{} `json:"lineage"`
-	Children    map[string]interface{} `json:"-"`
-	Reviews     map[string]interface{} `json:"-"`
-	CreatedAt   map[string]interface{} `json:"createdAt"`
-	UpdatedAt   map[string]interface{} `json:"updatedAt"`
+	Name            string                 `storm:"index"`
+	Ucpc            string                 `storm:"id"`
+	Link            string                 `json:"link"`
+	Qr              string                 `json:"-"`
+	Url             string                 `json:"url"`
+	Image           string                 `json:"image"`
+	SeedCompany     map[string]interface{} `json:"genetics"`
+	SeedCompanyName string                 `storm:"index"`
+	SeedCompanyUcpc string                 `storm:"index"`
+	Genetics        map[string]interface{} `json:"genetics"`
+	GeneticsNames   string                 `json:"geneticsNames"`
+	GeneticsUcpc    string                 `json:"geneticsUcpc"`
+	Lineage         map[string]interface{} `json:"lineage"`
+	Children        map[string]interface{} `json:"-"`
+	Reviews         map[string]interface{} `json:"-"`
+	CreatedAt       map[string]interface{} `json:"createdAt"`
+	UpdatedAt       map[string]interface{} `json:"updatedAt"`
+}
+
+type StrainClean struct {
+	Name        string `storm:"index"`
+	Ucpc        string `storm:"id"`
+	Link        string `json:"link"`
+	Qr          string `json:"-"`
+	Url         string `json:"url"`
+	Image       string `json:"image"`
+	SeedCompany struct {
+		Name string `storm:"index"`
+		Ucpc string `storm:"index"`
+		Link string `json:"-"`
+	}
+	Genetics struct {
+		Names string `json:"names"`
+		Ucpc  string `json:"ucpc"`
+		Link  string `json:"-"`
+	}
+	Lineage   map[string]interface{} `json:"lineage"`
+	Children  map[string]interface{} `json:"-"`
+	Reviews   map[string]interface{} `json:"-"`
+	CreatedAt map[string]interface{} `json:"createdAt"`
+	UpdatedAt map[string]interface{} `json:"updatedAt"`
 }
 
 type Review struct {
