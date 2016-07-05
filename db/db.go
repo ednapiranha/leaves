@@ -146,6 +146,16 @@ func GetAllStrains(page int, db *storm.DB) ([]Strain, error) {
 	return strains, nil
 }
 
+func GetStrain(ucpc string, db *storm.DB) (Strain, error) {
+	var strain Strain
+
+	err := db.One("Ucpc", ucpc, &strain)
+	if err != nil {
+		return strain, err
+	}
+	return strain, nil
+}
+
 func UpdateReview(reviewStrain Review, reviewFeed Review, db *storm.DB) error {
 	tx, err := db.Begin(true)
 

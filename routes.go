@@ -41,6 +41,12 @@ var routes = Routes{
 		Directory,
 	},
 	Route{
+		"Strain",
+		"GET",
+		"/strain/{ucpc}",
+		StrainDetail,
+	},
+	Route{
 		"Authenticate",
 		"GET",
 		"/authenticate",

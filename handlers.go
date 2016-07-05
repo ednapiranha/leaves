@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/csrf"
+	"github.com/gorilla/mux"
 
 	"github.com/revolting/leaves/authenticate"
 	"github.com/revolting/leaves/db"
@@ -127,6 +128,34 @@ func Directory(w http.ResponseWriter, req *http.Request) {
 		"strains": strains,
 		"prev":    prev,
 		"next":    next,
+	})
+}
+
+func StrainDetail(w http.ResponseWriter, req *http.Request) {
+	session, err := s.Get(req, "uid")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	s := false
+
+	if session.Values["uid"] != nil {
+		fmt.Println(session.Values["uid"])
+		s = true
+	}
+
+	vars := mux.Vars(req)
+	st, err := db.GetStrain(vars["ucpc"], d)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	r.HTML(w, http.StatusOK, "strain", map[string]interface{}{
+		"session":        s,
+		"strain":         st,
+		csrf.TemplateTag: csrf.TemplateField(req),
 	})
 }
 

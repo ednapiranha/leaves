@@ -78,10 +78,19 @@ h1 {
   font-size: 1.8rem;
 }
 
+p, h2 {
+  margin: 10px 0;
+}
+
 #strains li {
   margin: 3px;
+  background-color: #f1f1f1;
+}
+
+#strains li a {
+  text-decoration: none;
+  display: block;
   padding: 5px 10px;
-  background-color: #aeffeb;
 }
 
 #pagination {
