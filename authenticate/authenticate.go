@@ -38,25 +38,25 @@ func generatePin() string {
 
 func fixPhone(phone string) string {
 	reg, err := regexp.Compile("[^0-9+]")
-	if (err != nil) {
+	if err != nil {
 		log.Fatal(err)
 	}
 
-	number := reg.ReplaceAllString(phone, "");
+	number := reg.ReplaceAllString(phone, "")
 	regNA, err := regexp.MatchString("^[0-9]{10}$", number)
-	if (err != nil) {
+	if err != nil {
 		log.Fatal(err)
 	}
 
 	regPl, err := regexp.MatchString("^+", number)
-	if (err != nil) {
+	if err != nil {
 		log.Fatal(err)
 	}
 
-	if (regNA) {
-	  number = "+1" + number;
-	} else if (regPl) {
-	  number = "+" + number;
+	if regNA {
+		number = "+1" + number
+	} else if regPl {
+		number = "+" + number
 	}
 	println(number)
 	return number
@@ -78,7 +78,7 @@ func ValidatePin(pin string, phone string) bool {
 	phonePin, found := c.Get(phone)
 	if found {
 		p := phonePin.(string)
-		if (p == pin) {
+		if p == pin {
 			return true
 		}
 	}
@@ -87,7 +87,7 @@ func ValidatePin(pin string, phone string) bool {
 
 func CreateProfile(phone string, d *storm.DB) (db.Profile, error) {
 	u, err := uuid.NewV4()
-	if (err != nil) {
+	if err != nil {
 		log.Fatal(err)
 	}
 
@@ -96,11 +96,11 @@ func CreateProfile(phone string, d *storm.DB) (db.Profile, error) {
 	phoneHash := hex.EncodeToString(hash[:])
 
 	profile, err := db.GetProfile(phoneHash, d)
-	if (err != nil) {
+	if err != nil {
 		fmt.Println("NEW USER")
 		p := &db.Profile{Uid: id, Name: "???", Phone: phoneHash}
 		profile, err = db.UpdateProfile(*p, d)
-		if (err != nil) {
+		if err != nil {
 			log.Fatal(err)
 		}
 	} else {

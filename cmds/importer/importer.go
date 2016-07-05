@@ -20,7 +20,7 @@ var pageStart = flag.String("page", "1", "Page")
 func main() {
 	flag.Parse()
 
-	if (*pageStart != "1") {
+	if *pageStart != "1" {
 		currUrl = "https://www.cannabisreports.com/api/v1.0/strains?page=" + *pageStart
 	}
 
@@ -47,9 +47,9 @@ func GetData(url string) {
 }
 
 func Update() {
-	for _, v := range strains.Data{
+	for _, v := range strains.Data {
 		err := db.UpdateStrain(*v, d)
-		if (err != nil) {
+		if err != nil {
 			fmt.Println("could not update strain ", v.Name)
 		}
 	}
