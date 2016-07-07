@@ -26,10 +26,11 @@ var (
 	s            = sessions.NewCookieStore([]byte(*cookieSecret))
 
 	r = render.New(render.Options{
-		Directory:     "templates",
-		Extensions:    []string{".tmpl"},
-		Layout:        "layout",
-		IsDevelopment: *isDev,
+		Directory:       "templates",
+		Extensions:      []string{".tmpl"},
+		Layout:          "layout",
+		RequirePartials: true,
+		IsDevelopment:   *isDev,
 	})
 	d = db.NewDB(*dbPath)
 )

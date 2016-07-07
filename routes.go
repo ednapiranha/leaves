@@ -59,6 +59,18 @@ var routes = Routes{
 		UpdateReview,
 	},
 	Route{
+		"GetReview",
+		"GET",
+		"/review/{rid}",
+		GetReview,
+	},
+	Route{
+		"DeleteReview",
+		"GET",
+		"/delete/{rid}",
+		DeleteReview,
+	},
+	Route{
 		"Authenticate",
 		"GET",
 		"/authenticate",

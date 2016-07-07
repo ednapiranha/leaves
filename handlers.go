@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -13,6 +12,8 @@ import (
 )
 
 func Index(w http.ResponseWriter, req *http.Request) {
+	uid := ""
+
 	session, err := s.Get(req, "uid")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -22,19 +23,21 @@ func Index(w http.ResponseWriter, req *http.Request) {
 	s := false
 
 	if session.Values["uid"] != nil {
-		fmt.Println(session.Values["uid"])
+		uid = session.Values["uid"].(string)
 		s = true
 	}
 
-	reviews, _ := db.GetFeed(d)
+	reviews, _ := db.GetFeed(uid, d)
 
 	r.HTML(w, http.StatusOK, "index", map[string]interface{}{
 		"session": s,
+		"uid":     uid,
 		"reviews": reviews,
 	})
 }
 
 func Profile(w http.ResponseWriter, req *http.Request) {
+	uid := ""
 	session, err := s.Get(req, "uid")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -44,19 +47,14 @@ func Profile(w http.ResponseWriter, req *http.Request) {
 	s := false
 
 	if session.Values["uid"] != nil {
-		fmt.Println(session.Values["uid"])
 		s = true
-	}
-
-	if session.Values["uid"] == nil {
+		uid = session.Values["uid"].(string)
+	} else {
 		http.Redirect(w, req, "/", 301)
 	}
 
-	uid := session.Values["uid"].(string)
-
 	if req.Method == "POST" {
 		name := req.FormValue("name")
-		uid := uid
 		phone := session.Values["phone"].(string)
 
 		p := &db.Profile{Uid: uid, Name: name, Phone: phone}
@@ -70,7 +68,7 @@ func Profile(w http.ResponseWriter, req *http.Request) {
 		session.Save(req, w)
 	}
 
-	reviews, _ := db.GetFeedByUser(session.Values["uid"].(string), d)
+	reviews, _ := db.GetFeedByUser(uid, d)
 
 	r.HTML(w, http.StatusOK, "profile", map[string]interface{}{
 		"session":        s,
@@ -132,8 +130,6 @@ func Directory(w http.ResponseWriter, req *http.Request) {
 		next = strconv.Itoa(page)
 	}
 
-	fmt.Println(len(strains))
-
 	r.HTML(w, http.StatusOK, "directory", map[string]interface{}{
 		"search":         name,
 		"session":        s,
@@ -145,6 +141,8 @@ func Directory(w http.ResponseWriter, req *http.Request) {
 }
 
 func StrainDetail(w http.ResponseWriter, req *http.Request) {
+	uid := ""
+
 	session, err := s.Get(req, "uid")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -154,7 +152,7 @@ func StrainDetail(w http.ResponseWriter, req *http.Request) {
 	s := false
 
 	if session.Values["uid"] != nil {
-		fmt.Println(session.Values["uid"])
+		uid = session.Values["uid"].(string)
 		s = true
 	}
 
@@ -165,7 +163,7 @@ func StrainDetail(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	reviews, _ := db.GetReviewsByStrain(vars["ucpc"], d)
+	reviews, _ := db.GetReviewsByStrain(vars["ucpc"], uid, d)
 
 	r.HTML(w, http.StatusOK, "strain", map[string]interface{}{
 		"session":        s,
@@ -206,6 +204,61 @@ func UpdateReview(w http.ResponseWriter, req *http.Request) {
 	}
 
 	http.Redirect(w, req, "/strain/"+vars["ucpc"], 301)
+}
+
+func GetReview(w http.ResponseWriter, req *http.Request) {
+	uid := ""
+
+	session, err := s.Get(req, "uid")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	s := false
+
+	if session.Values["uid"] != nil {
+		uid = session.Values["uid"].(string)
+		s = true
+	}
+
+	vars := mux.Vars(req)
+
+	review, err := db.GetReview(vars["rid"], uid, d)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	r.HTML(w, http.StatusOK, "review", map[string]interface{}{
+		"session":        s,
+		"review":         review,
+		csrf.TemplateTag: csrf.TemplateField(req),
+	})
+}
+
+func DeleteReview(w http.ResponseWriter, req *http.Request) {
+	session, err := s.Get(req, "uid")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if session.Values["uid"] == nil {
+		http.Redirect(w, req, "/", 301)
+		return
+	}
+
+	uid := session.Values["uid"].(string)
+	vars := mux.Vars(req)
+
+	ucpc, err := db.RemoveReview(vars["rid"], uid, d)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
+	}
+
+	http.Redirect(w, req, "/strain/"+ucpc, 301)
 }
 
 func Authenticate(w http.ResponseWriter, req *http.Request) {

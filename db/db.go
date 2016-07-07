@@ -55,6 +55,12 @@ type Strain struct {
 	UpdatedAt       map[string]interface{} `json:"updatedAt"`
 }
 
+type Fave struct {
+	Rid       string `storm:"index"`
+	Uid       string `storm:"index"`
+	CreatedAt int32  `storm:"index"`
+}
+
 /*
 type StrainClean struct {
 	Name        string `storm:"index"`
@@ -86,6 +92,8 @@ type Review struct {
 	Ucpc       string `storm:"index"`
 	Uid        string `storm:"index"`
 	Strain     string `json:"strain"`
+	Username   string `json:"username"`
+	IsOwner    bool   `json:"isOwner"`
 	Grower     string `storm:"index"`
 	FiveMin    string `json:"fiveMin"`
 	TenMin     string `json:"tenMin"`
@@ -186,24 +194,57 @@ func AddReview(review Review, db *storm.DB) error {
 	return nil
 }
 
-func RemoveReview(id string, uid string, db *storm.DB) error {
+func GetReview(id string, uid string, db *storm.DB) (Review, error) {
+	var review Review
+	var strain Strain
+	var profile Profile
+
+	err := db.One("Rid", id, &review)
+	if err != nil {
+		return review, err
+	}
+
+	err = db.One("Ucpc", review.Ucpc, &strain)
+	if err != nil {
+		return review, err
+	}
+
+	review.Strain = strain.Name
+
+	if review.Uid == uid {
+		review.IsOwner = true
+	} else {
+		review.IsOwner = false
+	}
+
+	err = db.One("Uid", review.Uid, &profile)
+	if err != nil {
+		return review, err
+	}
+
+	review.Username = profile.Name
+
+	return review, nil
+}
+
+func RemoveReview(id string, uid string, db *storm.DB) (string, error) {
 	var review Review
 
 	err := db.One("Rid", id, &review)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	if review.Uid != uid {
-		return errors.New("Not the owner of this review. Cannot delete")
+		return "", errors.New("Not the owner of this review. Cannot delete")
 	}
 
 	err = db.Remove(&review)
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	return nil
+	return review.Ucpc, nil
 }
 
 func SearchStrains(name string, page int, db *storm.DB) ([]Strain, error) {
@@ -222,7 +263,7 @@ func SearchStrains(name string, page int, db *storm.DB) ([]Strain, error) {
 	return strains, nil
 }
 
-func GetReviewsByStrain(id string, db *storm.DB) ([]Review, error) {
+func GetReviewsByStrain(id string, uid string, db *storm.DB) ([]Review, error) {
 	var reviews []Review
 	var strain Strain
 
@@ -235,11 +276,16 @@ func GetReviewsByStrain(id string, db *storm.DB) ([]Review, error) {
 		if err == nil {
 			reviews[i].Strain = strain.Name
 		}
+		if reviews[i].Uid == uid {
+			reviews[i].IsOwner = true
+		} else {
+			reviews[i].IsOwner = false
+		}
 	}
 	return reviews, nil
 }
 
-func GetReviewsByGrower(grower string, db *storm.DB) ([]Review, error) {
+func GetReviewsByGrower(grower string, uid string, db *storm.DB) ([]Review, error) {
 	var reviews []Review
 	var strain Strain
 
@@ -251,6 +297,11 @@ func GetReviewsByGrower(grower string, db *storm.DB) ([]Review, error) {
 		err = db.One("Ucpc", reviews[i].Ucpc, &strain)
 		if err == nil {
 			reviews[i].Strain = strain.Name
+		}
+		if reviews[i].Uid == uid {
+			reviews[i].IsOwner = true
+		} else {
+			reviews[i].IsOwner = false
 		}
 	}
 	return reviews, nil
@@ -269,11 +320,16 @@ func GetFeedByUser(uid string, db *storm.DB) ([]Review, error) {
 		if err == nil {
 			reviews[i].Strain = strain.Name
 		}
+		if reviews[i].Uid == uid {
+			reviews[i].IsOwner = true
+		} else {
+			reviews[i].IsOwner = false
+		}
 	}
 	return reviews, nil
 }
 
-func GetFeed(db *storm.DB) ([]Review, error) {
+func GetFeed(uid string, db *storm.DB) ([]Review, error) {
 	var reviews []Review
 	var strain Strain
 
@@ -285,6 +341,11 @@ func GetFeed(db *storm.DB) ([]Review, error) {
 		err = db.One("Ucpc", reviews[i].Ucpc, &strain)
 		if err == nil {
 			reviews[i].Strain = strain.Name
+		}
+		if reviews[i].Uid == uid {
+			reviews[i].IsOwner = true
+		} else {
+			reviews[i].IsOwner = false
 		}
 	}
 	return reviews, nil

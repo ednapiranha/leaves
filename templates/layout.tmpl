@@ -5,22 +5,63 @@
     <meta content="width=device-width, height=device-height, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" name="viewport">
     <meta content="yes" name="apple-mobile-web-app-capable">
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
-    <link href='//fonts.googleapis.com/css?family=Heebo:400|Montserrat+Subrayada' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Heebo:300|Montserrat+Subrayada' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="/media/css/main.css">
   </head>
   <body>
     <header>
       <a href="/">/</a>
       <a href="/directory">directory</a>
-    {{ if .session }}
+    {{if .session}}
       <a href="/profile">profile</a>
       <a href="/logout">logout</a>
-    {{ else }}
+    {{else}}
       <a href="/authenticate">sign in</a>
-    {{ end }}
+    {{end}}
     </header>
     <div id="wrapper">
-      {{ yield }}
+      {{yield}}
+
+      {{block "reviews" .}}
+        {{range .reviews}}
+          <div class="review">
+            <a href="/review/{{.Rid}}">
+              <h3>{{.Strain}} / {{.Grower}}</h3>
+              {{if .FiveMin}}
+                <div class="minutes five">
+                  <h3>5 minutes</h3>
+                  <p>{{.FiveMin}}</p>
+                </div>
+              {{end}}
+              {{if .TenMin}}
+                <div class="minutes ten">
+                  <h3>10 minutes</h3>
+                  <p>{{.TenMin}}</p>
+                </div>
+              {{end}}
+              {{if .FifteenMin}}
+                <div class="minutes fifteen">
+                  <h3>15 minutes</h3>
+                  <p>{{.FifteenMin}}</p>
+                </div>
+              {{end}}
+              {{if .TwentyMin}}
+                <div class="minutes twenty">
+                  <h3>20 minutes</h3>
+                  <p>{{.TwentyMin}}</p>
+                </div>
+              {{end}}
+              {{if .Comments}}
+                <p class="comments">{{.Comments}}</p>
+              {{end}}
+            </a>
+            {{if .IsOwner}}
+              <a href="/delete/{{.Rid}}" class="delete">Delete</a>
+            {{end}}
+          </div>
+        {{end}}
+      {{end}}
     </div>
+    <script type="text/javascript" src="/media/js/main.js"></script>
   </body>
 </html>

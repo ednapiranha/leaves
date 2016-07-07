@@ -9,70 +9,34 @@
 
 <section id="reviews">
   {{if .session}}
-    <section class="add-review">
-      <p>Add your own review of this strain or read the recent ones below.</p>
+    <div class="add-review">
       <form method="post" action="/strain/{{.strain.Ucpc}}">
+        <p>Add your own review of this strain or read the recent ones below.</p>
         <div>
           <label for="grower" name="grower">Grower?</label>
           <input type="text" name="grower">
         </div>
-        <div>
+        <div class="five">
           <label for="fiveMin" name="fiveMin">5 minutes?</label>
           <input type="text" name="fiveMin">
         </div>
-        <div>
+        <div class="ten">
           <label for="tenMin" name="tenMin">10 minutes?</label>
           <input type="text" name="tenMin">
         </div>
-        <div>
-        <div>
+        <div class="fifteen">
           <label for="fifteenMin" name="fifteenMin">15 minutes?</label>
           <input type="text" name="fifteenMin">
         </div>
-        <div>
+        <div class="twenty">
           <label for="twentyMin" name="twentyMin">20 minutes?</label>
           <input type="text" name="twentyMin">
         </div>
         <p>Any additional comments, notes and/or stories about this strain?</p>
         <textarea name="comments"></textarea>
-        {{ .csrfField }}
+        {{.csrfField}}
         <button type="submit">Post Review</button>
       </form>
-    </section>
-  {{end}}
-
-  {{range .reviews}}
-    <div class="review">
-      <a href="/strain/{{.Ucpc}}">
-        <h3>{{.Strain}} / {{.Grower}}</h3>
-        {{if .FiveMin}}
-          <div class="minutes five">
-            <h3>5 minutes</h3>
-            <p>{{.FiveMin}}</p>
-          </div>
-        {{end}}
-        {{if .TenMin}}
-          <div class="minutes ten">
-            <h3>10 minutes</h3>
-            <p>{{.TenMin}}</p>
-          </div>
-        {{end}}
-        {{if .FifteenMin}}
-          <div class="minutes fifteen">
-            <h3>15 minutes</h3>
-            <p>{{.FifteenMin}}</p>
-          </div>
-        {{end}}
-        {{if .TwentyMin}}
-          <div class="minutes twenty">
-            <h3>20 minutes</h3>
-            <p>{{.TwentyMin}}</p>
-          </div>
-        {{end}}
-        {{if .Comments}}
-          <p class="comments">{{.Comments}}</p>
-        {{end}}
-      </a>
     </div>
   {{end}}
 </section>
