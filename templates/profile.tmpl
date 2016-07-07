@@ -1,43 +1,50 @@
 <h1>Profile</h1>
 
-<form method="post" action="/profile">
-  <div>
-    <label for="name">name: </label>
-    <input type="text" name="name" value="{{ .name }}">
-  </div>
-  {{ .csrfField }}
-  <button type="submit">update</button>
-</form>
+<section>
+  <form method="post" action="/profile">
+    <div>
+      <label for="name">name: </label>
+      <input type="text" name="name" value="{{ .name }}">
+    </div>
+    {{ .csrfField }}
+    <button type="submit">update</button>
+  </form>
+</section>
 
-{{range .reviews}}
-  <div class="review">
-    <h3>Grower: {{.Grower}}</h3>
-    {{if .FiveMin}}
-      <div class="minutes">
-        <h3>5 minutes</h3>
-        <p>{{.FiveMin}}</p>
-      </div>
-    {{end}}
-    {{if .TenMin}}
-      <div class="minutes">
-        <h3>10 minutes</h3>
-        <p>{{.TenMin}}</p>
-      </div>
-    {{end}}
-    {{if .FifteenMin}}
-      <div class="minutes">
-        <h3>15 minutes</h3>
-        <p>{{.FifteenMin}}</p>
-      </div>
-    {{end}}
-    {{if .TwentyMin}}
-      <div class="minutes">
-        <h3>20 minutes</h3>
-        <p>{{.TwentyMin}}</p>
-      </div>
-    {{end}}
-    {{if .Comments}}
-      <p class="comments">{{.Comments}}</p>
-    {{end}}
-  </div>
-{{end}}
+<section>
+  <h2>Reviews</h2>
+  {{range .reviews}}
+    <div class="review">
+      <a href="/strain/{{.Ucpc}}">
+        <h3>{{.Strain}} / {{.Grower}}</h3>
+        {{if .FiveMin}}
+          <div class="minutes five">
+            <h3>5 minutes</h3>
+            <p>{{.FiveMin}}</p>
+          </div>
+        {{end}}
+        {{if .TenMin}}
+          <div class="minutes ten">
+            <h3>10 minutes</h3>
+            <p>{{.TenMin}}</p>
+          </div>
+        {{end}}
+        {{if .FifteenMin}}
+          <div class="minutes fifteen">
+            <h3>15 minutes</h3>
+            <p>{{.FifteenMin}}</p>
+          </div>
+        {{end}}
+        {{if .TwentyMin}}
+          <div class="minutes twenty">
+            <h3>20 minutes</h3>
+            <p>{{.TwentyMin}}</p>
+          </div>
+        {{end}}
+        {{if .Comments}}
+          <p class="comments">{{.Comments}}</p>
+        {{end}}
+      </a>
+    </div>
+  {{end}}
+</section>

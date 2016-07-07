@@ -1,8 +1,7 @@
 <h1>{{.strain.Name}}</h1>
 
-<h2>UCPC: {{.strain.Ucpc}}</h2>
-
 <section id="strain-detail">
+  <p>UCPC: {{.strain.Ucpc}}</p>
   <p><img src="{{.strain.Image}}"></p>
 </section>
 
@@ -10,66 +9,70 @@
 
 <section id="reviews">
   {{if .session}}
-    <p>Add your own review of this strain or read the recent ones below.</p>
-    <form method="post" action="/strain/{{.strain.Ucpc}}">
-      <div>
-        <label for="grower" name="grower">Grower?</label>
-        <input type="text" name="grower">
-      </div>
-      <div>
-        <label for="fiveMin" name="fiveMin">5 minutes?</label>
-        <input type="text" name="fiveMin">
-      </div>
-      <div>
-        <label for="tenMin" name="tenMin">10 minutes?</label>
-        <input type="text" name="tenMin">
-      </div>
-      <div>
-      <div>
-        <label for="fifteenMin" name="fifteenMin">15 minutes?</label>
-        <input type="text" name="fifteenMin">
-      </div>
-      <div>
-        <label for="twentyMin" name="twentyMin">20 minutes?</label>
-        <input type="text" name="twentyMin">
-      </div>
-      <p>Any additional comments, notes and/or stories about this strain?</p>
-      <textarea name="comments"></textarea>
-      {{ .csrfField }}
-      <button type="submit">Post Review</button>
-    </form>
+    <section class="add-review">
+      <p>Add your own review of this strain or read the recent ones below.</p>
+      <form method="post" action="/strain/{{.strain.Ucpc}}">
+        <div>
+          <label for="grower" name="grower">Grower?</label>
+          <input type="text" name="grower">
+        </div>
+        <div>
+          <label for="fiveMin" name="fiveMin">5 minutes?</label>
+          <input type="text" name="fiveMin">
+        </div>
+        <div>
+          <label for="tenMin" name="tenMin">10 minutes?</label>
+          <input type="text" name="tenMin">
+        </div>
+        <div>
+        <div>
+          <label for="fifteenMin" name="fifteenMin">15 minutes?</label>
+          <input type="text" name="fifteenMin">
+        </div>
+        <div>
+          <label for="twentyMin" name="twentyMin">20 minutes?</label>
+          <input type="text" name="twentyMin">
+        </div>
+        <p>Any additional comments, notes and/or stories about this strain?</p>
+        <textarea name="comments"></textarea>
+        {{ .csrfField }}
+        <button type="submit">Post Review</button>
+      </form>
+    </section>
   {{end}}
 
   {{range .reviews}}
     <div class="review">
-      <h3>Grower: {{.Grower}}</h3>
-      {{if .FiveMin}}
-        <div class="minutes">
-          <h3>5 minutes</h3>
-          <p>{{.FiveMin}}</p>
-        </div>
-      {{end}}
-      {{if .TenMin}}
-        <div class="minutes">
-          <h3>10 minutes</h3>
-          <p>{{.TenMin}}</p>
-        </div>
-      {{end}}
-      {{if .FifteenMin}}
-        <div class="minutes">
-          <h3>15 minutes</h3>
-          <p>{{.FifteenMin}}</p>
-        </div>
-      {{end}}
-      {{if .TwentyMin}}
-        <div class="minutes">
-          <h3>20 minutes</h3>
-          <p>{{.TwentyMin}}</p>
-        </div>
-      {{end}}
-      {{if .Comments}}
-        <p class="comments">{{.Comments}}</p>
-      {{end}}
+      <a href="/strain/{{.Ucpc}}">
+        <h3>{{.Strain}} / {{.Grower}}</h3>
+        {{if .FiveMin}}
+          <div class="minutes five">
+            <h3>5 minutes</h3>
+            <p>{{.FiveMin}}</p>
+          </div>
+        {{end}}
+        {{if .TenMin}}
+          <div class="minutes ten">
+            <h3>10 minutes</h3>
+            <p>{{.TenMin}}</p>
+          </div>
+        {{end}}
+        {{if .FifteenMin}}
+          <div class="minutes fifteen">
+            <h3>15 minutes</h3>
+            <p>{{.FifteenMin}}</p>
+          </div>
+        {{end}}
+        {{if .TwentyMin}}
+          <div class="minutes twenty">
+            <h3>20 minutes</h3>
+            <p>{{.TwentyMin}}</p>
+          </div>
+        {{end}}
+        {{if .Comments}}
+          <p class="comments">{{.Comments}}</p>
+        {{end}}
+      </a>
     </div>
   {{end}}
 </section>

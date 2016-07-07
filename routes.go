@@ -41,6 +41,12 @@ var routes = Routes{
 		Directory,
 	},
 	Route{
+		"Search",
+		"POST",
+		"/search",
+		Directory,
+	},
+	Route{
 		"Strain",
 		"GET",
 		"/strain/{ucpc}",

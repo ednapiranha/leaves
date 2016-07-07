@@ -52,10 +52,6 @@ body {
   font-family: Heebo, sans-serif;
 }
 
-#wrapper {
-  padding: 20px;
-}
-
 header {
   padding: 0 20px;
   background-color: #111;
@@ -74,12 +70,15 @@ header a:hover {
   color: #111;
 }
 
+h1, #wrapper > h2, section {
+  padding: 20px;
+}
+
 h1, header, #pagination a, .minutes h3 {
   font-family: 'Montserrat Subrayada', sans-serif;
 }
 
 h1 {
-  margin: 20px 0;
   font-size: 1.7rem;
 }
 
@@ -135,13 +134,33 @@ label {
   background-color: #f1f1f1;
 }
 
+#reviews {
+  padding: 0;
+}
+
 .review {
-  border: 2px solid #111;
   margin: 10px 0;
+  background-color: #d7f9ff;
+}
+
+.five {
+  background-color: #9cf5ff;
+}
+
+.ten {
+  background-color: #73e4f1;
+}
+
+.fifteen {
+  background-color: #6aceef;
+}
+
+.twenty {
+  background-color: #52c7f2;
 }
 
 .review .comments, .review > a > h3, .review > h3 {
-  padding: 20px;
+  padding: 15px;
 }
 
 .review .comments {
@@ -153,6 +172,15 @@ label {
   font-size: 1.2rem;
 }
 
+.review .minutes h3 {
+  font-size: 1.2rem;
+  display: inline;
+}
+
+.review .minutes p {
+  display: inline;
+}
+
 .review > a {
   text-decoration: none;
   outline: none;
@@ -160,6 +188,10 @@ label {
 
 .review > a > * {
   color: #111;
+}
+
+.add-review {
+  background-color: #f1f1f1;
 }
 
 input[type="text"], textarea {
@@ -179,6 +211,10 @@ textarea {
 button {
   display: block;
   margin: 10px 0 30px;
+}
+
+section.search {
+  padding-bottom: 0;
 }
 
 #pagination {

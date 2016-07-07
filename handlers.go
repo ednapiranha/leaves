@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -83,6 +82,8 @@ func Profile(w http.ResponseWriter, req *http.Request) {
 }
 
 func Directory(w http.ResponseWriter, req *http.Request) {
+	var strains []db.Strain
+
 	session, err := s.Get(req, "uid")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -92,7 +93,6 @@ func Directory(w http.ResponseWriter, req *http.Request) {
 	s := false
 
 	if session.Values["uid"] != nil {
-		fmt.Println(session.Values["uid"])
 		s = true
 	}
 
@@ -111,14 +111,21 @@ func Directory(w http.ResponseWriter, req *http.Request) {
 
 	next := strconv.Itoa(page + 1)
 	prevInt := page - 1
+	name := ""
 
 	if prevInt >= 1 {
 		prev = strconv.Itoa(prevInt)
 	}
 
-	strains, err := db.GetAllStrains(page, d)
-	if err != nil {
-		log.Fatal(err)
+	if req.Method == "POST" || len(req.URL.Query().Get("keyword")) > 1 {
+		if req.Method == "POST" {
+			name = req.FormValue("name")
+		} else {
+			name = req.URL.Query().Get("keyword")
+		}
+		strains, _ = db.SearchStrains(name, page, d)
+	} else {
+		strains, _ = db.GetAllStrains(page, d)
 	}
 
 	if len(strains) < db.GetLimit() {
@@ -128,10 +135,12 @@ func Directory(w http.ResponseWriter, req *http.Request) {
 	fmt.Println(len(strains))
 
 	r.HTML(w, http.StatusOK, "directory", map[string]interface{}{
-		"session": s,
-		"strains": strains,
-		"prev":    prev,
-		"next":    next,
+		"search":         name,
+		"session":        s,
+		"strains":        strains,
+		"prev":           prev,
+		"next":           next,
+		csrf.TemplateTag: csrf.TemplateField(req),
 	})
 }
 

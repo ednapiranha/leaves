@@ -1,16 +1,26 @@
-<h1>directory of strains</h1>
+<section class="search">
+  <form method="post" action="/search">
+    <input type="text" name="name" placeholder="SEARCH" value="{{.search}}">
+    {{.csrfField}}
+    <button type="submit">Find</button>
+  </form>
+</section>
 
-<ul id="strains">
-  {{range .strains}}
-    <li>
-      <a href="/strain/{{.Ucpc}}" title="{{.Name}}">
-        <h2>{{.Name}}</h2>
-      </a>
-    </li>
-  {{end}}
-</ul>
+<h1>directory</h1>
 
-<div id="pagination">
-  <a href="/directory?page={{ .prev }}">Prev</a>
-  <a href="/directory?page={{ .next }}">Next</a>
-</div>
+<section>
+  <ul id="strains">
+    {{range .strains}}
+      <li>
+        <a href="/strain/{{.Ucpc}}" title="{{.Name}}">
+          <h2>{{.Name}}</h2>
+        </a>
+      </li>
+    {{end}}
+  </ul>
+
+  <div id="pagination">
+    <a href="/directory?page={{ .prev }}&amp;keyword={{.search}}">Prev</a>
+    <a href="/directory?page={{ .next }}&amp;keyword={{.search}}">Next</a>
+  </div>
+</section>
