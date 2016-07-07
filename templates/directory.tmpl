@@ -1,5 +1,6 @@
 <section class="search">
   <form method="post" action="/search">
+    <p>Search is currently case sensitive. Will fix later.</p>
     <input type="text" name="name" placeholder="SEARCH" value="{{.search}}">
     {{.csrfField}}
     <button type="submit">Find</button>
