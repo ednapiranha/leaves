@@ -3,37 +3,35 @@
 
 <section id="reviews">
   <div class="review">
-    <a href="/strain/{{.Ucpc}}">
-      <h3>Grower: {{.review.Grower}}</h3>
-      <h3>Posted by: {{.review.Username}}</h3>
-      {{if .review.FiveMin}}
-        <div class="minutes five">
-          <h3>5 minutes</h3>
-          <p>{{.review.FiveMin}}</p>
-        </div>
-      {{end}}
-      {{if .review.TenMin}}
-        <div class="minutes ten">
-          <h3>10 minutes</h3>
-          <p>{{.review.TenMin}}</p>
-        </div>
-      {{end}}
-      {{if .review.FifteenMin}}
-        <div class="minutes fifteen">
-          <h3>15 minutes</h3>
-          <p>{{.review.FifteenMin}}</p>
-        </div>
-      {{end}}
-      {{if .review.TwentyMin}}
-        <div class="minutes twenty">
-          <h3>20 minutes</h3>
-          <p>{{.review.TwentyMin}}</p>
-        </div>
-      {{end}}
-      {{if .review.Comments}}
-        <p class="comments">{{.review.Comments}}</p>
-      {{end}}
-    </a>
+    <h3>Grower: {{.review.Grower}}</h3>
+    <h3>Posted by: {{.review.Username}}</h3>
+    {{if .review.FiveMin}}
+      <div class="minutes five">
+        <h3>5 minutes</h3>
+        <p>{{.review.FiveMin}}</p>
+      </div>
+    {{end}}
+    {{if .review.TenMin}}
+      <div class="minutes ten">
+        <h3>10 minutes</h3>
+        <p>{{.review.TenMin}}</p>
+      </div>
+    {{end}}
+    {{if .review.FifteenMin}}
+      <div class="minutes fifteen">
+        <h3>15 minutes</h3>
+        <p>{{.review.FifteenMin}}</p>
+      </div>
+    {{end}}
+    {{if .review.TwentyMin}}
+      <div class="minutes twenty">
+        <h3>20 minutes</h3>
+        <p>{{.review.TwentyMin}}</p>
+      </div>
+    {{end}}
+    {{if .review.Comments}}
+      <p class="comments">{{.review.Comments}}</p>
+    {{end}}
     {{if .review.IsOwner}}
       <a href="/delete/{{.review.Rid}}" class="delete">Delete</a>
     {{end}}
