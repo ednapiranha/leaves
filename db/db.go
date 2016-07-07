@@ -1,14 +1,17 @@
 package db
 
 import (
+	"encoding/hex"
+	"errors"
 	"fmt"
 	"log"
 	"time"
 
 	"github.com/asdine/storm"
+	"github.com/nu7hatch/gouuid"
 )
 
-const limit = 20
+const limit = 24
 
 type Profile struct {
 	Uid   string `storm:"id"`
@@ -16,6 +19,7 @@ type Profile struct {
 	Phone string `json:"phone"`
 }
 
+/*
 type Strains struct {
 	Data []*StrainClean
 	Meta struct {
@@ -31,7 +35,7 @@ type Strains struct {
 		}
 	}
 }
-
+*/
 type Strain struct {
 	Name            string                 `storm:"index"`
 	Ucpc            string                 `storm:"id"`
@@ -51,6 +55,7 @@ type Strain struct {
 	UpdatedAt       map[string]interface{} `json:"updatedAt"`
 }
 
+/*
 type StrainClean struct {
 	Name        string `storm:"index"`
 	Ucpc        string `storm:"id"`
@@ -74,17 +79,19 @@ type StrainClean struct {
 	CreatedAt map[string]interface{} `json:"createdAt"`
 	UpdatedAt map[string]interface{} `json:"updatedAt"`
 }
+*/
 
 type Review struct {
-	Rid        string    `storm:"id"`
-	Uid        string    `storm:"index"`
-	Group      string    `storm:"index"`
-	FiveMin    string    `json:"fiveMin"`
-	TenMin     string    `json:"tenMin"`
-	FifteenMin string    `json:"fifteenMin"`
-	TwentyMin  string    `json:"twentyMin"`
-	Comments   string    `json:"comments"`
-	CreatedAt  time.Time `json:"createdAt"`
+	Rid        string `storm:"id"`
+	Ucpc       string `storm:"index"`
+	Uid        string `storm:"index"`
+	Grower     string `storm:"index"`
+	FiveMin    string `json:"fiveMin"`
+	TenMin     string `json:"tenMin"`
+	FifteenMin string `json:"fifteenMin"`
+	TwentyMin  string `json:"twentyMin"`
+	Comments   string `json:"comments"`
+	CreatedAt  int32  `storm:"index"`
 }
 
 func NewDB(dbPath string) *storm.DB {
@@ -156,22 +163,44 @@ func GetStrain(ucpc string, db *storm.DB) (Strain, error) {
 	return strain, nil
 }
 
-func UpdateReview(reviewStrain Review, reviewFeed Review, db *storm.DB) error {
-	tx, err := db.Begin(true)
+func AddReview(review Review, db *storm.DB) error {
+	var rev Review
 
-	err = db.Save(&reviewStrain)
+	u, err := uuid.NewV4()
 	if err != nil {
-		tx.Rollback()
+		log.Fatal(err)
+	}
+
+	id := hex.EncodeToString(u[:])
+
+	rev = review
+	rev.Rid = id
+	rev.CreatedAt = int32(time.Now().Unix())
+
+	err = db.Save(&rev)
+	if err != nil {
 		return err
 	}
 
-	err = db.Save(&reviewFeed)
+	return nil
+}
+
+func RemoveReview(id string, uid string, db *storm.DB) error {
+	var review Review
+
+	err := db.One("Rid", id, &review)
 	if err != nil {
-		tx.Rollback()
 		return err
 	}
 
-	tx.Commit()
+	if review.Uid != uid {
+		return errors.New("Not the owner of this review. Cannot delete")
+	}
+
+	err = db.Remove(&review)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -179,14 +208,24 @@ func UpdateReview(reviewStrain Review, reviewFeed Review, db *storm.DB) error {
 func GetReviewsByStrain(id string, db *storm.DB) ([]Review, error) {
 	var reviews []Review
 
-	err := db.Find("Group", "strain", &reviews, storm.Limit(limit))
+	err := db.Find("Ucpc", id, &reviews, storm.Limit(limit*2))
 	if err != nil {
 		return reviews, err
 	}
 	return reviews, nil
 }
 
-func GetReviewsByUser(uid string, db *storm.DB) ([]Review, error) {
+func GetReviewsByGrower(grower string, db *storm.DB) ([]Review, error) {
+	var reviews []Review
+
+	err := db.Find("Grower", grower, &reviews, storm.Limit(limit))
+	if err != nil {
+		return reviews, err
+	}
+	return reviews, nil
+}
+
+func GetFeedByUser(uid string, db *storm.DB) ([]Review, error) {
 	var reviews []Review
 
 	err := db.Find("Uid", uid, &reviews, storm.Limit(limit))
@@ -196,10 +235,10 @@ func GetReviewsByUser(uid string, db *storm.DB) ([]Review, error) {
 	return reviews, nil
 }
 
-func GetReviewsByFeed(db *storm.DB) ([]Review, error) {
+func GetFeed(db *storm.DB) ([]Review, error) {
 	var reviews []Review
 
-	err := db.Find("Group", "feed", &reviews, storm.Limit(limit))
+	err := db.AllByIndex("CreatedAt", &reviews, storm.Limit(limit))
 	if err != nil {
 		return reviews, err
 	}

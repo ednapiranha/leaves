@@ -1,1 +1,36 @@
 <h1>Leaves</h1>
+
+{{range .reviews}}
+  <div class="review">
+    <a href="/strain/{{.Ucpc}}">
+      <h3>Grower: {{.Grower}}</h3>
+      {{if .FiveMin}}
+        <div class="minutes">
+          <h3>5 minutes</h3>
+          <p>{{.FiveMin}}</p>
+        </div>
+      {{end}}
+      {{if .TenMin}}
+        <div class="minutes">
+          <h3>10 minutes</h3>
+          <p>{{.TenMin}}</p>
+        </div>
+      {{end}}
+      {{if .FifteenMin}}
+        <div class="minutes">
+          <h3>15 minutes</h3>
+          <p>{{.FifteenMin}}</p>
+        </div>
+      {{end}}
+      {{if .TwentyMin}}
+        <div class="minutes">
+          <h3>20 minutes</h3>
+          <p>{{.TwentyMin}}</p>
+        </div>
+      {{end}}
+      {{if .Comments}}
+        <p class="comments">{{.Comments}}</p>
+      {{end}}
+    </a>
+  </div>
+{{end}}

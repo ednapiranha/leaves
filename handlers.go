@@ -27,8 +27,11 @@ func Index(w http.ResponseWriter, req *http.Request) {
 		s = true
 	}
 
+	reviews, _ := db.GetFeed(d)
+
 	r.HTML(w, http.StatusOK, "index", map[string]interface{}{
 		"session": s,
+		"reviews": reviews,
 	})
 }
 
@@ -50,17 +53,15 @@ func Profile(w http.ResponseWriter, req *http.Request) {
 		http.Redirect(w, req, "/", 301)
 	}
 
+	uid := session.Values["uid"].(string)
+
 	if req.Method == "POST" {
 		name := req.FormValue("name")
-		uid := session.Values["uid"].(string)
+		uid := uid
 		phone := session.Values["phone"].(string)
 
 		p := &db.Profile{Uid: uid, Name: name, Phone: phone}
 		profile, err := db.UpdateProfile(*p, d)
-		if err != nil {
-			log.Fatal(err)
-		}
-
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -70,10 +71,13 @@ func Profile(w http.ResponseWriter, req *http.Request) {
 		session.Save(req, w)
 	}
 
+	reviews, _ := db.GetFeedByUser(session.Values["uid"].(string), d)
+
 	r.HTML(w, http.StatusOK, "profile", map[string]interface{}{
 		"session":        s,
-		"uid":            session.Values["uid"],
+		"uid":            uid,
 		"name":           session.Values["name"],
+		"reviews":        reviews,
 		csrf.TemplateTag: csrf.TemplateField(req),
 	})
 }
@@ -152,11 +156,47 @@ func StrainDetail(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	reviews, _ := db.GetReviewsByStrain(vars["ucpc"], d)
+
 	r.HTML(w, http.StatusOK, "strain", map[string]interface{}{
 		"session":        s,
 		"strain":         st,
+		"reviews":        reviews,
 		csrf.TemplateTag: csrf.TemplateField(req),
 	})
+}
+
+func UpdateReview(w http.ResponseWriter, req *http.Request) {
+	session, err := s.Get(req, "uid")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if session.Values["uid"] == nil {
+		http.Redirect(w, req, "/", 301)
+	}
+
+	vars := mux.Vars(req)
+
+	review := &db.Review{
+		Uid:        session.Values["uid"].(string),
+		Ucpc:       vars["ucpc"],
+		Grower:     req.FormValue("grower"),
+		FiveMin:    req.FormValue("fiveMin"),
+		TenMin:     req.FormValue("tenMin"),
+		FifteenMin: req.FormValue("fifteenMin"),
+		TwentyMin:  req.FormValue("twentyMin"),
+		Comments:   req.FormValue("comments"),
+	}
+
+	err = db.AddReview(*review, d)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	http.Redirect(w, req, "/strain/"+vars["ucpc"], 301)
 }
 
 func Authenticate(w http.ResponseWriter, req *http.Request) {

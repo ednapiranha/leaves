@@ -1,8 +1,43 @@
-profile
+<h1>Profile</h1>
 
 <form method="post" action="/profile">
-  <label>uid: {{ .uid }}</label>
-  <label>name: <input type="text" name="name" value="{{ .name }}"></label>
+  <div>
+    <label for="name">name: </label>
+    <input type="text" name="name" value="{{ .name }}">
+  </div>
   {{ .csrfField }}
   <button type="submit">update</button>
 </form>
+
+{{range .reviews}}
+  <div class="review">
+    <h3>Grower: {{.Grower}}</h3>
+    {{if .FiveMin}}
+      <div class="minutes">
+        <h3>5 minutes</h3>
+        <p>{{.FiveMin}}</p>
+      </div>
+    {{end}}
+    {{if .TenMin}}
+      <div class="minutes">
+        <h3>10 minutes</h3>
+        <p>{{.TenMin}}</p>
+      </div>
+    {{end}}
+    {{if .FifteenMin}}
+      <div class="minutes">
+        <h3>15 minutes</h3>
+        <p>{{.FifteenMin}}</p>
+      </div>
+    {{end}}
+    {{if .TwentyMin}}
+      <div class="minutes">
+        <h3>20 minutes</h3>
+        <p>{{.TwentyMin}}</p>
+      </div>
+    {{end}}
+    {{if .Comments}}
+      <p class="comments">{{.Comments}}</p>
+    {{end}}
+  </div>
+{{end}}

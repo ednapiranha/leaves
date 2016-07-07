@@ -3,9 +3,8 @@
 <ul id="strains">
   {{range .strains}}
     <li>
-      <a href="/strain/{{.Ucpc}}">
+      <a href="/strain/{{.Ucpc}}" title="{{.Name}}">
         <h2>{{.Name}}</h2>
-        <p>Seed company: {{.SeedCompanyName}}</p>
       </a>
     </li>
   {{end}}
