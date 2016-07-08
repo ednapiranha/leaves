@@ -251,6 +251,7 @@ label {
 
 .review h3 {
   font-size: 1rem;
+  font-weight: bold;
 }
 
 .review .minutes h3 {
