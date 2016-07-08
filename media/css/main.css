@@ -127,15 +127,16 @@ h2 {
 #strains li a h2 {
   font-size: 0.9rem;
   font-weight: bold;
+  margin-left: 40px;
 }
 
 #strains li a h2 span {
   position: absolute;
-  right: 20px;
+  left: 0;
   top: 0;
   display: inline-block;
   padding: 5px;
-  font-size: 1rem;
+  font-size: 0.9rem;
   line-height: 1rem;
   background-color: #4fdcff;
   color: #fff;

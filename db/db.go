@@ -192,6 +192,9 @@ func GetAllStrains(page int, db *storm.DB) ([]Strain, int, error) {
 		err = db.Find("Ucpc", strains[i].Ucpc, &reviews)
 		if err == nil {
 			strains[i].ReviewsCount = len(reviews)
+			if strains[i].ReviewsCount > 99 {
+				strains[i].ReviewsCount = 99
+			}
 			strains[i].HasReviews = true
 		} else {
 			strains[i].ReviewsCount = 0
@@ -322,6 +325,9 @@ func SearchStrains(name string, page int, db *storm.DB) ([]Strain, int, error) {
 		err = db.Find("Ucpc", strains[i].Ucpc, &reviews)
 		if err == nil {
 			strains[i].ReviewsCount = len(reviews)
+			if strains[i].ReviewsCount > 99 {
+				strains[i].ReviewsCount = 99
+			}
 			strains[i].HasReviews = true
 		} else {
 			strains[i].ReviewsCount = 0
