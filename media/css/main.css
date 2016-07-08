@@ -313,28 +313,6 @@ label {
   margin: 10px 20px;
 }
 
-.delete {
-  position: absolute;
-  top: 0;
-  right: 0;
-  padding: 5px 15px 5px 5px;
-  font-size: 0.8rem;
-  background-color: #ccc;
-  text-transform: uppercase;
-  color: #666;
-  opacity: 0.5;
-  transition: all 1s;
-  -webkit-transition: all 1s;
-}
-
-.delete:hover {
-  opacity: 1.0;
-  background-color: #f00;
-  color: #ffb9c5;
-  transition: all 1s;
-  -webkit-transition: all 1s;
-}
-
 input[type="text"], textarea {
   font-family: Heebo, sans-serif;
   padding: 2px;
@@ -381,4 +359,48 @@ section.profile {
 #pagination a:hover {
   color: #111;
   background-color: transparent;
+}
+
+.actions {
+  padding: 5px 20px;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.actions a {
+  text-decoration: none;
+  position: absolute;
+  top: 0;
+}
+
+.actions .like {
+  font-size: 2.5rem;
+  color: #ccc;
+  right: 80px;
+  top: -8px;
+}
+
+.actions .like:hover, .actions .like.on {
+  color: #f85999;
+}
+
+.delete {
+  right: 0;
+  padding: 5px 15px 5px 5px;
+  font-size: 0.8rem;
+  background-color: #ccc;
+  text-transform: uppercase;
+  color: #666;
+  opacity: 0.5;
+  transition: all 1s;
+  -webkit-transition: all 1s;
+}
+
+.delete:hover {
+  opacity: 1.0;
+  background-color: #f00;
+  color: #ffb9c5;
+  transition: all 1s;
+  -webkit-transition: all 1s;
 }

@@ -338,6 +338,28 @@ func DeleteReview(w http.ResponseWriter, req *http.Request) {
 	http.Redirect(w, req, "/strain/"+ucpc, 301)
 }
 
+func UpdateLike(w http.ResponseWriter, req *http.Request) {
+	session, err := s.Get(req, "uid")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if session.Values["uid"] == nil {
+		http.Redirect(w, req, "/", 301)
+		return
+	}
+
+	uid := session.Values["uid"].(string)
+	vars := mux.Vars(req)
+
+	err = db.UpdateLike(vars["rid"], uid, d)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
+	}
+}
+
 func Authenticate(w http.ResponseWriter, req *http.Request) {
 	if req.Method == "POST" {
 		session, err := s.Get(req, "uid")

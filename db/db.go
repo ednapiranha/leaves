@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"sort"
+	"strings"
 	"time"
 
 	"github.com/asdine/storm"
@@ -59,9 +61,10 @@ type Strain struct {
 	HasReviews      bool                   `json:"hasReviews"`
 }
 
-type Fave struct {
-	Rid       string `storm:"index"`
+type Like struct {
+	Lid       string `storm:"id"`
 	Uid       string `storm:"index"`
+	Rid       string `storm:"index"`
 	CreatedAt int64  `storm:"index"`
 }
 
@@ -106,6 +109,7 @@ type Review struct {
 	Comments   string `json:"comments"`
 	CreatedAt  int64  `storm:"index"`
 	OrderId    int64  `storm:"index"`
+	Liked      bool   `json:"liked"`
 }
 
 func NewDB(dbPath string) *storm.DB {
@@ -250,6 +254,7 @@ func GetReview(id string, uid string, db *storm.DB) (Review, error) {
 	var review Review
 	var strain Strain
 	var profile Profile
+	var like Like
 
 	err := db.One("Rid", id, &review)
 	if err != nil {
@@ -276,6 +281,15 @@ func GetReview(id string, uid string, db *storm.DB) (Review, error) {
 
 	review.Username = profile.Name
 
+	lid := []string{uid, id}
+	sort.Strings(lid)
+	err = db.One("Lid", strings.Join(lid, ","), &like)
+	if err != nil {
+		review.Liked = false
+	} else {
+		review.Liked = true
+	}
+
 	return review, nil
 }
 
@@ -297,6 +311,33 @@ func RemoveReview(id string, uid string, db *storm.DB) (string, error) {
 	}
 
 	return review.Ucpc, nil
+}
+
+func UpdateLike(uid string, rid string, db *storm.DB) error {
+	var like Like
+
+	lid := []string{uid, rid}
+	sort.Strings(lid)
+	err := db.One("Lid", strings.Join(lid, ","), &like)
+	if err != nil {
+		// Add a new like
+		like.Lid = strings.Join(lid, ",")
+		like.Uid = uid
+		like.Rid = rid
+
+		err = db.Save(&like)
+		if err != nil {
+			return err
+		}
+	} else {
+		// Remove existing like
+		err = db.Remove(&like)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func SearchStrains(name string, page int, db *storm.DB) ([]Strain, int, error) {

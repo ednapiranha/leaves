@@ -77,6 +77,12 @@ var routes = Routes{
 		DeleteReview,
 	},
 	Route{
+		"UpdateLike",
+		"GET",
+		"/like/{rid}",
+		UpdateLike,
+	},
+	Route{
 		"Authenticate",
 		"GET",
 		"/authenticate",

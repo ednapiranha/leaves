@@ -32,8 +32,13 @@
     {{if .review.Comments}}
       <p class="comments">{{.review.Comments}}</p>
     {{end}}
-    {{if .review.IsOwner}}
-      <a href="/delete/{{.review.Rid}}" class="delete">Delete</a>
+    {{if .session}}
+      <div class="actions">
+        <a href="/like/{{.review.Rid}}" class="like {{if .review.Liked}}on{{end}}">❤</a>
+        {{if .review.IsOwner}}
+          <a href="/delete/{{.review.Rid}}" class="delete">Delete</a>
+        {{end}}
+      </div>
     {{end}}
   </div>
 </section>
