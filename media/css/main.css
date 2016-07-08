@@ -163,8 +163,8 @@ label {
 .ten, .ten:hover,
 .fifteen, .fifteen:hover,
 .twenty, .twenty:hover {
-  transition: all 1s;
-  -webkit-transition: all 1s;
+  transition: all 1.5s;
+  -webkit-transition: all 1.5s;
 }
 
 .five {
