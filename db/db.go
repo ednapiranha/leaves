@@ -263,11 +263,17 @@ func SearchStrains(name string, page int, db *storm.DB) ([]Strain, error) {
 	return strains, nil
 }
 
-func GetReviewsByStrain(id string, uid string, db *storm.DB) ([]Review, error) {
+func GetReviewsByStrain(id string, page int, uid string, db *storm.DB) ([]Review, error) {
 	var reviews []Review
 	var strain Strain
 
-	err := db.Find("Ucpc", id, &reviews, storm.Limit(limit))
+	page = page - 1
+
+	if page < 0 {
+		page = 0
+	}
+
+	err := db.Find("Ucpc", id, &reviews, storm.Limit(limit), storm.Skip(page*limit))
 	if err != nil {
 		return reviews, err
 	}
@@ -285,11 +291,17 @@ func GetReviewsByStrain(id string, uid string, db *storm.DB) ([]Review, error) {
 	return reviews, nil
 }
 
-func GetReviewsByGrower(grower string, uid string, db *storm.DB) ([]Review, error) {
+func GetReviewsByGrower(grower string, page int, uid string, db *storm.DB) ([]Review, error) {
 	var reviews []Review
 	var strain Strain
 
-	err := db.Find("Grower", grower, &reviews, storm.Limit(limit))
+	page = page - 1
+
+	if page < 0 {
+		page = 0
+	}
+
+	err := db.Find("Grower", grower, &reviews, storm.Limit(limit), storm.Skip(page*limit))
 	if err != nil {
 		return reviews, err
 	}
@@ -307,11 +319,17 @@ func GetReviewsByGrower(grower string, uid string, db *storm.DB) ([]Review, erro
 	return reviews, nil
 }
 
-func GetFeedByUser(uid string, db *storm.DB) ([]Review, error) {
+func GetFeedByUser(uid string, page int, db *storm.DB) ([]Review, error) {
 	var reviews []Review
 	var strain Strain
 
-	err := db.Find("Uid", uid, &reviews, storm.Limit(limit))
+	page = page - 1
+
+	if page < 0 {
+		page = 0
+	}
+
+	err := db.Find("Uid", uid, &reviews, storm.Limit(limit), storm.Skip(page*limit))
 	if err != nil {
 		return reviews, err
 	}
@@ -329,15 +347,22 @@ func GetFeedByUser(uid string, db *storm.DB) ([]Review, error) {
 	return reviews, nil
 }
 
-func GetFeed(uid string, db *storm.DB) ([]Review, error) {
+func GetFeed(uid string, page int, db *storm.DB) ([]Review, error) {
 	var reviews []Review
 	var strain Strain
 
-	err := db.AllByIndex("CreatedAt", &reviews, storm.Limit(limit))
+	page = page - 1
+
+	if page < 0 {
+		page = 0
+	}
+
+	err := db.AllByIndex("CreatedAt", &reviews, storm.Limit(limit), storm.Skip(page*limit))
 	if err != nil {
 		return reviews, err
 	}
 	for i := range reviews {
+		fmt.Println(reviews[i].CreatedAt, reviews[i].Grower)
 		err = db.One("Ucpc", reviews[i].Ucpc, &strain)
 		if err == nil {
 			reviews[i].Strain = strain.Name

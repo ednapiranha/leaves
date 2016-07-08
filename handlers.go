@@ -11,6 +11,29 @@ import (
 	"github.com/revolting/leaves/db"
 )
 
+func setPage(p string) (string, string, int) {
+	page := 1
+	prev := "1"
+
+	if p != "" {
+		pg, err := strconv.Atoi(p)
+		if err != nil {
+			page = 1
+		} else {
+			page = pg
+		}
+	}
+
+	next := strconv.Itoa(page + 1)
+	prevInt := page - 1
+
+	if prevInt >= 1 {
+		prev = strconv.Itoa(prevInt)
+	}
+
+	return prev, next, page
+}
+
 func Index(w http.ResponseWriter, req *http.Request) {
 	uid := ""
 
@@ -27,12 +50,19 @@ func Index(w http.ResponseWriter, req *http.Request) {
 		s = true
 	}
 
-	reviews, _ := db.GetFeed(uid, d)
+	prev, next, page := setPage(req.URL.Query().Get("page"))
+	reviews, _ := db.GetFeed(uid, page, d)
+
+	if len(reviews) < db.GetLimit() {
+		next = strconv.Itoa(page)
+	}
 
 	r.HTML(w, http.StatusOK, "index", map[string]interface{}{
 		"session": s,
 		"uid":     uid,
 		"reviews": reviews,
+		"prev":    prev,
+		"next":    next,
 	})
 }
 
@@ -53,6 +83,8 @@ func Profile(w http.ResponseWriter, req *http.Request) {
 		http.Redirect(w, req, "/", 301)
 	}
 
+	prev, next, page := setPage(req.URL.Query().Get("page"))
+
 	if req.Method == "POST" {
 		name := req.FormValue("name")
 		phone := session.Values["phone"].(string)
@@ -68,13 +100,19 @@ func Profile(w http.ResponseWriter, req *http.Request) {
 		session.Save(req, w)
 	}
 
-	reviews, _ := db.GetFeedByUser(uid, d)
+	reviews, _ := db.GetFeedByUser(uid, page, d)
+
+	if len(reviews) < db.GetLimit() {
+		next = strconv.Itoa(page)
+	}
 
 	r.HTML(w, http.StatusOK, "profile", map[string]interface{}{
 		"session":        s,
 		"uid":            uid,
 		"name":           session.Values["name"],
 		"reviews":        reviews,
+		"prev":           prev,
+		"next":           next,
 		csrf.TemplateTag: csrf.TemplateField(req),
 	})
 }
@@ -94,26 +132,8 @@ func Directory(w http.ResponseWriter, req *http.Request) {
 		s = true
 	}
 
-	page := 1
-	prev := "1"
-
-	p := req.URL.Query().Get("page")
-	if p != "" {
-		pg, err := strconv.Atoi(p)
-		if err != nil {
-			page = 1
-		} else {
-			page = pg
-		}
-	}
-
-	next := strconv.Itoa(page + 1)
-	prevInt := page - 1
+	prev, next, page := setPage(req.URL.Query().Get("page"))
 	name := ""
-
-	if prevInt >= 1 {
-		prev = strconv.Itoa(prevInt)
-	}
 
 	if req.Method == "POST" || len(req.URL.Query().Get("keyword")) > 1 {
 		if req.Method == "POST" {
@@ -163,12 +183,15 @@ func StrainDetail(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	reviews, _ := db.GetReviewsByStrain(vars["ucpc"], uid, d)
+	prev, next, page := setPage(req.URL.Query().Get("page"))
+	reviews, _ := db.GetReviewsByStrain(vars["ucpc"], page, uid, d)
 
 	r.HTML(w, http.StatusOK, "strain", map[string]interface{}{
 		"session":        s,
 		"strain":         st,
 		"reviews":        reviews,
+		"prev":           prev,
+		"next":           next,
 		csrf.TemplateTag: csrf.TemplateField(req),
 	})
 }

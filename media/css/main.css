@@ -191,6 +191,42 @@ label {
   color: #319dc5;
 }
 
+.review:hover {
+  background-color: #fff2aa;
+}
+
+.review:hover .five {
+  background-color: #ecd851;
+}
+
+.review:hover .five h3 {
+  color: #d6c23b;
+}
+
+.review:hover .ten {
+  background-color: #f1c356;
+}
+
+.review:hover .ten h3 {
+  color: #daad42;
+}
+
+.review:hover .fifteen {
+  background-color: #eca951;
+}
+
+.review:hover .fifteen h3 {
+  color: #d7933b;
+}
+
+.review:hover .twenty {
+  background-color: #f0913d;
+}
+
+.review:hover .twenty h3 {
+  color: #d97b28;
+}
+
 .add-review label {
   margin-top: 0;
 }

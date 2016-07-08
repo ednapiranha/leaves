@@ -47,7 +47,7 @@
               {{end}}
               {{if .TwentyMin}}
                 <div class="minutes twenty">
-                  <h3>20 minutes</h3>
+                  <h3>20+ minutes</h3>
                   <p>{{.TwentyMin}}</p>
                 </div>
               {{end}}
@@ -60,6 +60,11 @@
             {{end}}
           </div>
         {{end}}
+
+        <div id="pagination">
+          <a href="?page={{ .prev }}">Prev</a>
+          <a href="?page={{ .next }}">Next</a>
+        </div>
       {{end}}
     </div>
     <script type="text/javascript" src="/media/js/main.js"></script>
