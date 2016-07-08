@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 	"strconv"
+	"unicode/utf8"
 
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/mux"
@@ -51,18 +52,31 @@ func Index(w http.ResponseWriter, req *http.Request) {
 	}
 
 	prev, next, page := setPage(req.URL.Query().Get("page"))
-	reviews, _ := db.GetFeed(uid, page, d)
+	reviews, nextCount, _ := db.GetFeed(uid, page, d)
 
 	if len(reviews) < db.GetLimit() {
 		next = strconv.Itoa(page)
 	}
 
+	showNext := true
+	showPrev := true
+
+	if nextCount == 0 {
+		showNext = false
+	}
+
+	if page == 1 {
+		showPrev = false
+	}
+
 	r.HTML(w, http.StatusOK, "index", map[string]interface{}{
-		"session": s,
-		"uid":     uid,
-		"reviews": reviews,
-		"prev":    prev,
-		"next":    next,
+		"session":  s,
+		"uid":      uid,
+		"reviews":  reviews,
+		"prev":     prev,
+		"next":     next,
+		"showNext": showNext,
+		"showPrev": showPrev,
 	})
 }
 
@@ -100,10 +114,21 @@ func Profile(w http.ResponseWriter, req *http.Request) {
 		session.Save(req, w)
 	}
 
-	reviews, _ := db.GetFeedByUser(uid, page, d)
+	reviews, nextCount, _ := db.GetFeedByUser(uid, page, d)
 
 	if len(reviews) < db.GetLimit() {
 		next = strconv.Itoa(page)
+	}
+
+	showNext := true
+	showPrev := true
+
+	if nextCount == 0 {
+		showNext = false
+	}
+
+	if page == 1 {
+		showPrev = false
 	}
 
 	r.HTML(w, http.StatusOK, "profile", map[string]interface{}{
@@ -113,6 +138,8 @@ func Profile(w http.ResponseWriter, req *http.Request) {
 		"reviews":        reviews,
 		"prev":           prev,
 		"next":           next,
+		"showNext":       showNext,
+		"showPrev":       showPrev,
 		csrf.TemplateTag: csrf.TemplateField(req),
 	})
 }
@@ -134,20 +161,32 @@ func Directory(w http.ResponseWriter, req *http.Request) {
 
 	prev, next, page := setPage(req.URL.Query().Get("page"))
 	name := ""
+	nextCount := 0
 
-	if req.Method == "POST" || len(req.URL.Query().Get("keyword")) > 1 {
+	if req.Method == "POST" || utf8.RuneCountInString(req.URL.Query().Get("keyword")) > 0 {
 		if req.Method == "POST" {
 			name = req.FormValue("name")
 		} else {
 			name = req.URL.Query().Get("keyword")
 		}
-		strains, _ = db.SearchStrains(name, page, d)
+		strains, nextCount, _ = db.SearchStrains(name, page, d)
 	} else {
-		strains, _ = db.GetAllStrains(page, d)
+		strains, nextCount, _ = db.GetAllStrains(page, d)
 	}
 
 	if len(strains) < db.GetLimit() {
 		next = strconv.Itoa(page)
+	}
+
+	showNext := true
+	showPrev := true
+
+	if nextCount == 0 {
+		showNext = false
+	}
+
+	if page == 1 {
+		showPrev = false
 	}
 
 	r.HTML(w, http.StatusOK, "directory", map[string]interface{}{
@@ -156,6 +195,8 @@ func Directory(w http.ResponseWriter, req *http.Request) {
 		"strains":        strains,
 		"prev":           prev,
 		"next":           next,
+		"showNext":       showNext,
+		"showPrev":       showPrev,
 		csrf.TemplateTag: csrf.TemplateField(req),
 	})
 }
@@ -184,7 +225,18 @@ func StrainDetail(w http.ResponseWriter, req *http.Request) {
 	}
 
 	prev, next, page := setPage(req.URL.Query().Get("page"))
-	reviews, _ := db.GetReviewsByStrain(vars["ucpc"], page, uid, d)
+	reviews, nextCount, _ := db.GetReviewsByStrain(vars["ucpc"], page, uid, d)
+
+	showNext := true
+	showPrev := true
+
+	if nextCount == 0 {
+		showNext = false
+	}
+
+	if page == 1 {
+		showPrev = false
+	}
 
 	r.HTML(w, http.StatusOK, "strain", map[string]interface{}{
 		"session":        s,
@@ -192,6 +244,8 @@ func StrainDetail(w http.ResponseWriter, req *http.Request) {
 		"reviews":        reviews,
 		"prev":           prev,
 		"next":           next,
+		"showNext":       showNext,
+		"showPrev":       showPrev,
 		csrf.TemplateTag: csrf.TemplateField(req),
 	})
 }

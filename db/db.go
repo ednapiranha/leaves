@@ -146,8 +146,9 @@ func UpdateStrain(strain Strain, db *storm.DB) error {
 	return nil
 }
 
-func GetAllStrains(page int, db *storm.DB) ([]Strain, error) {
+func GetAllStrains(page int, db *storm.DB) ([]Strain, int, error) {
 	var strains []Strain
+	strainsCount := 0
 
 	page = page - 1
 
@@ -155,11 +156,18 @@ func GetAllStrains(page int, db *storm.DB) ([]Strain, error) {
 		page = 0
 	}
 
-	err := db.AllByIndex("Name", &strains, storm.Limit(limit), storm.Skip(page*limit))
+	err := db.AllByIndex("Name", &strains, storm.Limit(limit), storm.Skip((page+1)*limit))
 	if err != nil {
-		return strains, err
+		return strains, strainsCount, err
 	}
-	return strains, nil
+	strainsCount = len(strains)
+
+	err = db.AllByIndex("Name", &strains, storm.Limit(limit), storm.Skip(page*limit))
+	if err != nil {
+		return strains, strainsCount, err
+	}
+
+	return strains, strainsCount, nil
 }
 
 func GetStrain(ucpc string, db *storm.DB) (Strain, error) {
@@ -247,8 +255,9 @@ func RemoveReview(id string, uid string, db *storm.DB) (string, error) {
 	return review.Ucpc, nil
 }
 
-func SearchStrains(name string, page int, db *storm.DB) ([]Strain, error) {
+func SearchStrains(name string, page int, db *storm.DB) ([]Strain, int, error) {
 	var strains []Strain
+	strainsCount := 0
 
 	page = page - 1
 
@@ -256,16 +265,24 @@ func SearchStrains(name string, page int, db *storm.DB) ([]Strain, error) {
 		page = 0
 	}
 
-	err := db.Range("Name", name, name+"*", &strains, storm.Limit(limit), storm.Skip(page*limit))
+	err := db.Range("Name", name, name+"*", &strains, storm.Limit(limit), storm.Skip((page+1)*limit))
 	if err != nil {
-		return strains, err
+		return strains, strainsCount, err
 	}
-	return strains, nil
+	strainsCount = len(strains)
+
+	err = db.Range("Name", name, name+"*", &strains, storm.Limit(limit), storm.Skip(page*limit))
+	if err != nil {
+		return strains, strainsCount, err
+	}
+
+	return strains, strainsCount, nil
 }
 
-func GetReviewsByStrain(id string, page int, uid string, db *storm.DB) ([]Review, error) {
+func GetReviewsByStrain(id string, page int, uid string, db *storm.DB) ([]Review, int, error) {
 	var reviews []Review
 	var strain Strain
+	reviewsCount := 0
 
 	page = page - 1
 
@@ -273,10 +290,17 @@ func GetReviewsByStrain(id string, page int, uid string, db *storm.DB) ([]Review
 		page = 0
 	}
 
-	err := db.Find("Ucpc", id, &reviews, storm.Limit(limit), storm.Skip(page*limit))
+	err := db.Find("Ucpc", id, &reviews, storm.Limit(limit), storm.Skip((page+1)*limit))
 	if err != nil {
-		return reviews, err
+		return reviews, reviewsCount, err
 	}
+	reviewsCount = len(reviews)
+
+	err = db.Find("Ucpc", id, &reviews, storm.Limit(limit), storm.Skip(page*limit))
+	if err != nil {
+		return reviews, reviewsCount, err
+	}
+
 	for i := range reviews {
 		err = db.One("Ucpc", reviews[i].Ucpc, &strain)
 		if err == nil {
@@ -288,12 +312,14 @@ func GetReviewsByStrain(id string, page int, uid string, db *storm.DB) ([]Review
 			reviews[i].IsOwner = false
 		}
 	}
-	return reviews, nil
+
+	return reviews, reviewsCount, nil
 }
 
-func GetReviewsByGrower(grower string, page int, uid string, db *storm.DB) ([]Review, error) {
+func GetReviewsByGrower(grower string, page int, uid string, db *storm.DB) ([]Review, int, error) {
 	var reviews []Review
 	var strain Strain
+	reviewsCount := 0
 
 	page = page - 1
 
@@ -301,10 +327,17 @@ func GetReviewsByGrower(grower string, page int, uid string, db *storm.DB) ([]Re
 		page = 0
 	}
 
-	err := db.Find("Grower", grower, &reviews, storm.Limit(limit), storm.Skip(page*limit))
+	err := db.Find("Grower", grower, &reviews, storm.Limit(limit), storm.Skip((page+1)*limit))
 	if err != nil {
-		return reviews, err
+		return reviews, reviewsCount, err
 	}
+	reviewsCount = len(reviews)
+
+	err = db.Find("Grower", grower, &reviews, storm.Limit(limit), storm.Skip(page*limit))
+	if err != nil {
+		return reviews, reviewsCount, err
+	}
+
 	for i := range reviews {
 		err = db.One("Ucpc", reviews[i].Ucpc, &strain)
 		if err == nil {
@@ -316,12 +349,13 @@ func GetReviewsByGrower(grower string, page int, uid string, db *storm.DB) ([]Re
 			reviews[i].IsOwner = false
 		}
 	}
-	return reviews, nil
+	return reviews, reviewsCount, nil
 }
 
-func GetFeedByUser(uid string, page int, db *storm.DB) ([]Review, error) {
+func GetFeedByUser(uid string, page int, db *storm.DB) ([]Review, int, error) {
 	var reviews []Review
 	var strain Strain
+	reviewsCount := 0
 
 	page = page - 1
 
@@ -329,10 +363,17 @@ func GetFeedByUser(uid string, page int, db *storm.DB) ([]Review, error) {
 		page = 0
 	}
 
-	err := db.Find("Uid", uid, &reviews, storm.Limit(limit), storm.Skip(page*limit))
+	err := db.Find("Uid", uid, &reviews, storm.Limit(limit), storm.Skip((page+1)*limit))
 	if err != nil {
-		return reviews, err
+		return reviews, reviewsCount, err
 	}
+	reviewsCount = len(reviews)
+
+	err = db.Find("Uid", uid, &reviews, storm.Limit(limit), storm.Skip(page*limit))
+	if err != nil {
+		return reviews, reviewsCount, err
+	}
+
 	for i := range reviews {
 		err = db.One("Ucpc", reviews[i].Ucpc, &strain)
 		if err == nil {
@@ -344,12 +385,13 @@ func GetFeedByUser(uid string, page int, db *storm.DB) ([]Review, error) {
 			reviews[i].IsOwner = false
 		}
 	}
-	return reviews, nil
+	return reviews, reviewsCount, nil
 }
 
-func GetFeed(uid string, page int, db *storm.DB) ([]Review, error) {
+func GetFeed(uid string, page int, db *storm.DB) ([]Review, int, error) {
 	var reviews []Review
 	var strain Strain
+	reviewsCount := 0
 
 	page = page - 1
 
@@ -357,12 +399,18 @@ func GetFeed(uid string, page int, db *storm.DB) ([]Review, error) {
 		page = 0
 	}
 
-	err := db.AllByIndex("CreatedAt", &reviews, storm.Limit(limit), storm.Skip(page*limit))
+	err := db.AllByIndex("CreatedAt", &reviews, storm.Limit(limit), storm.Skip((page+1)*limit))
 	if err != nil {
-		return reviews, err
+		return reviews, reviewsCount, err
 	}
+	reviewsCount = len(reviews)
+
+	err = db.AllByIndex("CreatedAt", &reviews, storm.Limit(limit), storm.Skip(page*limit))
+	if err != nil {
+		return reviews, reviewsCount, err
+	}
+
 	for i := range reviews {
-		fmt.Println(reviews[i].CreatedAt, reviews[i].Grower)
 		err = db.One("Ucpc", reviews[i].Ucpc, &strain)
 		if err == nil {
 			reviews[i].Strain = strain.Name
@@ -373,5 +421,5 @@ func GetFeed(uid string, page int, db *storm.DB) ([]Review, error) {
 			reviews[i].IsOwner = false
 		}
 	}
-	return reviews, nil
+	return reviews, reviewsCount, nil
 }

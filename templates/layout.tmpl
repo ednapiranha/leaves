@@ -62,8 +62,12 @@
         {{end}}
 
         <div id="pagination">
-          <a href="?page={{ .prev }}">Prev</a>
-          <a href="?page={{ .next }}">Next</a>
+          {{if .showPrev}}
+            <a href="?page={{ .prev }}{{if .search}}&amp;keyword={{.search}}{{end}}">Prev</a>
+          {{end}}
+          {{if .showNext}}
+            <a href="?page={{ .next }}{{if .search}}&amp;keyword={{.search}}{{end}}">Next</a>
+          {{end}}
         </div>
       {{end}}
     </div>
