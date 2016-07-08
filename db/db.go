@@ -12,6 +12,7 @@ import (
 )
 
 const limit = 24
+const maxOrder = 90000000000
 
 type Profile struct {
 	Uid   string `storm:"id"`
@@ -53,12 +54,13 @@ type Strain struct {
 	Reviews         map[string]interface{} `json:"-"`
 	CreatedAt       map[string]interface{} `json:"createdAt"`
 	UpdatedAt       map[string]interface{} `json:"updatedAt"`
+	SearchTerm      string                 `storm:"index"`
 }
 
 type Fave struct {
 	Rid       string `storm:"index"`
 	Uid       string `storm:"index"`
-	CreatedAt int32  `storm:"index"`
+	CreatedAt int64  `storm:"index"`
 }
 
 /*
@@ -100,7 +102,8 @@ type Review struct {
 	FifteenMin string `json:"fifteenMin"`
 	TwentyMin  string `json:"twentyMin"`
 	Comments   string `json:"comments"`
-	CreatedAt  int32  `storm:"index"`
+	CreatedAt  int64  `storm:"index"`
+	OrderId    int64  `storm:"index"`
 }
 
 func NewDB(dbPath string) *storm.DB {
@@ -117,6 +120,10 @@ func Close(db *storm.DB) {
 
 func GetLimit() int {
 	return limit
+}
+
+func GetMaxOrder() int64 {
+	return maxOrder
 }
 
 func GetProfile(phone string, db *storm.DB) (Profile, error) {
@@ -144,6 +151,17 @@ func UpdateStrain(strain Strain, db *storm.DB) error {
 		return err
 	}
 	return nil
+}
+
+func GetAllStrainsNoPagination(db *storm.DB) ([]Strain, error) {
+	var strains []Strain
+
+	err := db.AllByIndex("Name", &strains)
+	if err != nil {
+		return strains, err
+	}
+
+	return strains, nil
 }
 
 func GetAllStrains(page int, db *storm.DB) ([]Strain, int, error) {
@@ -192,13 +210,22 @@ func AddReview(review Review, db *storm.DB) error {
 
 	rev = review
 	rev.Rid = id
-	rev.CreatedAt = int32(time.Now().Unix())
+	rev.CreatedAt = int64(time.Now().Unix())
+	rev.OrderId = maxOrder - rev.CreatedAt
 
 	err = db.Save(&rev)
 	if err != nil {
 		return err
 	}
 
+	return nil
+}
+
+func UpdateReview(review Review, db *storm.DB) error {
+	err := db.Save(&review)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -265,13 +292,13 @@ func SearchStrains(name string, page int, db *storm.DB) ([]Strain, int, error) {
 		page = 0
 	}
 
-	err := db.Range("Name", name, name+"*", &strains, storm.Limit(limit), storm.Skip((page+1)*limit))
+	err := db.Range("SearchTerm", name, name+"*", &strains, storm.Limit(limit), storm.Skip((page+1)*limit))
 	if err != nil {
 		return strains, strainsCount, err
 	}
 	strainsCount = len(strains)
 
-	err = db.Range("Name", name, name+"*", &strains, storm.Limit(limit), storm.Skip(page*limit))
+	err = db.Range("SearchTerm", name, name+"*", &strains, storm.Limit(limit), storm.Skip(page*limit))
 	if err != nil {
 		return strains, strainsCount, err
 	}
@@ -399,13 +426,13 @@ func GetFeed(uid string, page int, db *storm.DB) ([]Review, int, error) {
 		page = 0
 	}
 
-	err := db.AllByIndex("CreatedAt", &reviews, storm.Limit(limit), storm.Skip((page+1)*limit))
+	err := db.AllByIndex("OrderId", &reviews, storm.Limit(limit), storm.Skip((page+1)*limit))
 	if err != nil {
 		return reviews, reviewsCount, err
 	}
 	reviewsCount = len(reviews)
 
-	err = db.AllByIndex("CreatedAt", &reviews, storm.Limit(limit), storm.Skip(page*limit))
+	err = db.AllByIndex("OrderId", &reviews, storm.Limit(limit), storm.Skip(page*limit))
 	if err != nil {
 		return reviews, reviewsCount, err
 	}
@@ -422,4 +449,15 @@ func GetFeed(uid string, page int, db *storm.DB) ([]Review, int, error) {
 		}
 	}
 	return reviews, reviewsCount, nil
+}
+
+func GetFeedNoPagination(db *storm.DB) ([]Review, error) {
+	var reviews []Review
+
+	err := db.AllByIndex("CreatedAt", &reviews)
+	if err != nil {
+		return reviews, err
+	}
+
+	return reviews, nil
 }

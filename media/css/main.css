@@ -162,7 +162,8 @@ label {
 .five, .five:hover,
 .ten, .ten:hover,
 .fifteen, .fifteen:hover,
-.twenty, .twenty:hover {
+.twenty, .twenty:hover,
+.review, .review:hover {
   transition: all 1.5s;
   -webkit-transition: all 1.5s;
 }
