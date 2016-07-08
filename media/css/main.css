@@ -159,6 +159,14 @@ label {
   position: relative;
 }
 
+.five, .five:hover,
+.ten, .ten:hover,
+.fifteen, .fifteen:hover,
+.twenty, .twenty:hover {
+  transition: all 1s;
+  -webkit-transition: all 1s;
+}
+
 .five {
   background-color: #9cf5ff;
 }
