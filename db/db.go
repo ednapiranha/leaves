@@ -55,6 +55,8 @@ type Strain struct {
 	CreatedAt       map[string]interface{} `json:"createdAt"`
 	UpdatedAt       map[string]interface{} `json:"updatedAt"`
 	SearchTerm      string                 `storm:"index"`
+	ReviewsCount    int                    `json:"reviewsCount"`
+	HasReviews      bool                   `json:"hasReviews"`
 }
 
 type Fave struct {
@@ -166,6 +168,7 @@ func GetAllStrainsNoPagination(db *storm.DB) ([]Strain, error) {
 
 func GetAllStrains(page int, db *storm.DB) ([]Strain, int, error) {
 	var strains []Strain
+	var reviews []Review
 	strainsCount := 0
 
 	page = page - 1
@@ -183,6 +186,17 @@ func GetAllStrains(page int, db *storm.DB) ([]Strain, int, error) {
 	err = db.AllByIndex("Name", &strains, storm.Limit(limit), storm.Skip(page*limit))
 	if err != nil {
 		return strains, strainsCount, err
+	}
+
+	for i := range strains {
+		err = db.Find("Ucpc", strains[i].Ucpc, &reviews)
+		if err == nil {
+			strains[i].ReviewsCount = len(reviews)
+			strains[i].HasReviews = true
+		} else {
+			strains[i].ReviewsCount = 0
+			strains[i].HasReviews = false
+		}
 	}
 
 	return strains, strainsCount, nil
@@ -284,6 +298,7 @@ func RemoveReview(id string, uid string, db *storm.DB) (string, error) {
 
 func SearchStrains(name string, page int, db *storm.DB) ([]Strain, int, error) {
 	var strains []Strain
+	var reviews []Review
 	strainsCount := 0
 
 	page = page - 1
@@ -301,6 +316,17 @@ func SearchStrains(name string, page int, db *storm.DB) ([]Strain, int, error) {
 	err = db.Range("SearchTerm", name, name+"*", &strains, storm.Limit(limit), storm.Skip(page*limit))
 	if err != nil {
 		return strains, strainsCount, err
+	}
+
+	for i := range strains {
+		err = db.Find("Ucpc", strains[i].Ucpc, &reviews)
+		if err == nil {
+			strains[i].ReviewsCount = len(reviews)
+			strains[i].HasReviews = true
+		} else {
+			strains[i].ReviewsCount = 0
+			strains[i].HasReviews = false
+		}
 	}
 
 	return strains, strainsCount, nil

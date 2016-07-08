@@ -110,13 +110,14 @@ h2 {
   overflow: hidden;
   transition: all 1.5s;
   -webkit-transition: all 1.5s;
+  position: relative;
 }
 
 #strains li a {
   background-color: #d7f9ff;
   text-decoration: none;
   display: block;
-  padding: 5px 10px;
+  padding: 3px 20px;
   line-height: 1.1rem;
   color: #111;
   transition: all 1.5s;
@@ -124,7 +125,24 @@ h2 {
 }
 
 #strains li a h2 {
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+#strains li a h2 span {
+  position: absolute;
+  right: 20px;
+  top: 0;
+  display: inline-block;
+  padding: 5px;
   font-size: 1rem;
+  line-height: 1rem;
+  background-color: #4fdcff;
+  color: #fff;
+  text-align: center;
+  min-width: 20px;
+  transition: all 1.5s;
+  -webkit-transition: all 1.5s;
 }
 
 #strain-detail {
@@ -133,6 +151,12 @@ h2 {
 
 #strains li a:hover {
   background-color: #fff2aa;
+  transition: all 1.5s;
+  -webkit-transition: all 1.5s;
+}
+
+#strains li a:hover h2 span {
+  background-color: #f8d859;
   transition: all 1.5s;
   -webkit-transition: all 1.5s;
 }

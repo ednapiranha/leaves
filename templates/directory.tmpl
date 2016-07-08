@@ -9,14 +9,12 @@
 
 <h1>directory</h1>
 
-<section>
-  <ul id="strains">
-    {{range .strains}}
-      <li>
-        <a href="/strain/{{.Ucpc}}" title="{{.Name}}">
-          <h2>{{.Name}}</h2>
-        </a>
-      </li>
-    {{end}}
-  </ul>
-</section>
+<ul id="strains">
+  {{range .strains}}
+    <li>
+      <a href="/strain/{{.Ucpc}}" title="{{.Name}}">
+        <h2>{{.Name}} {{if .HasReviews}}<span>{{.ReviewsCount}}</span>{{end}}</h2>
+      </a>
+    </li>
+  {{end}}
+</ul>
