@@ -100,24 +100,27 @@ h2 {
 }
 
 #strains {
-  display: flex;
-  flex-wrap: wrap;
+  width: 100%;
 }
 
 #strains li {
-  margin: 3px;
-  background-color: #f5f5f5;
-  width: 290px;
+  margin: 3px 0;
   float: left;
+  width: 100%;
   overflow: hidden;
+  transition: all 1.5s;
+  -webkit-transition: all 1.5s;
 }
 
 #strains li a {
+  background-color: #d7f9ff;
   text-decoration: none;
   display: block;
   padding: 5px 10px;
   line-height: 1.1rem;
   color: #111;
+  transition: all 1.5s;
+  -webkit-transition: all 1.5s;
 }
 
 #strains li a h2 {
@@ -128,14 +131,10 @@ h2 {
   padding: 0 20px;
 }
 
-#strain-detail img {
-  display: none;
-  height: 200px;
-}
-
 #strains li a:hover {
-  background-color: #48efce;
-  color: #1659b3;
+  background-color: #fff2aa;
+  transition: all 1.5s;
+  -webkit-transition: all 1.5s;
 }
 
 label {
@@ -340,6 +339,8 @@ section.profile {
 
 #pagination {
   margin: 20px;
+  float: left;
+  clear: both;
 }
 
 #pagination a {
