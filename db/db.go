@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"regexp"
 	"sort"
 	"strings"
 	"time"
@@ -151,7 +152,12 @@ func UpdateProfile(profile Profile, db *storm.DB) (Profile, error) {
 }
 
 func UpdateStrain(strain Strain, db *storm.DB) error {
-	err := db.Save(&strain)
+	reg, err := regexp.Compile("[()-/]")
+	if err != nil {
+		log.Fatal(err)
+	}
+	strain.SearchTerm = reg.ReplaceAllString(strings.ToLower(strain.Name), "")
+	err = db.Save(&strain)
 	if err != nil {
 		fmt.Println(err)
 		return err
