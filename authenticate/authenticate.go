@@ -96,6 +96,7 @@ func CreateProfile(phone string, d *storm.DB) (db.Profile, error) {
 	phoneHash := hex.EncodeToString(hash[:])
 
 	profile, err := db.GetProfile(phoneHash, d)
+
 	if err != nil {
 		fmt.Println("NEW USER")
 		p := &db.Profile{Uid: id, Name: "???", Phone: phoneHash}

@@ -20,7 +20,7 @@ const maxOrder = 90000000000
 type Profile struct {
 	Uid   string `storm:"id"`
 	Name  string `json:"name"`
-	Phone string `json:"phone"`
+	Phone string `storm:"index"`
 }
 
 /*
@@ -159,7 +159,6 @@ func UpdateStrain(strain Strain, db *storm.DB) error {
 	strain.SearchTerm = reg.ReplaceAllString(strings.ToLower(strain.Name), "")
 	err = db.Save(&strain)
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 	return nil

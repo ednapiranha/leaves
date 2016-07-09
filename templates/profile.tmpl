@@ -2,6 +2,7 @@
 
 <section class="profile">
   <form method="post" action="/profile">
+    <p>UID: {{.uid}}</p>
     <div>
       <label for="name">name: </label>
       <input type="text" name="name" value="{{ .name }}">
