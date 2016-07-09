@@ -3,7 +3,6 @@ package db
 import (
 	"encoding/hex"
 	"errors"
-	"fmt"
 	"log"
 	"regexp"
 	"sort"
