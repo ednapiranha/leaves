@@ -59,6 +59,18 @@ var routes = Routes{
 		StrainDetail,
 	},
 	Route{
+		"UpdateStrain",
+		"GET",
+		"/add/strain",
+		UpdateStrain,
+	},
+	Route{
+		"UpdateStrain",
+		"POST",
+		"/add/strain",
+		UpdateStrain,
+	},
+	Route{
 		"Review",
 		"POST",
 		"/strain/{ucpc}",

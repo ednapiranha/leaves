@@ -250,6 +250,38 @@ func StrainDetail(w http.ResponseWriter, req *http.Request) {
 	})
 }
 
+func UpdateStrain(w http.ResponseWriter, req *http.Request) {
+	session, err := s.Get(req, "uid")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if session.Values["uid"] == nil {
+		http.Redirect(w, req, "/", 301)
+	}
+
+	if req.Method == "POST" {
+		strain := &db.Strain{
+			Name: req.FormValue("name"),
+			Ucpc: req.FormValue("ucpc"),
+		}
+
+		err = db.UpdateStrain(*strain, d)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		http.Redirect(w, req, "/strain/"+strain.Ucpc, 301)
+	} else {
+		r.HTML(w, http.StatusOK, "add_strain", map[string]interface{}{
+			"session":        s,
+			csrf.TemplateTag: csrf.TemplateField(req),
+		})
+	}
+}
+
 func UpdateReview(w http.ResponseWriter, req *http.Request) {
 	session, err := s.Get(req, "uid")
 	if err != nil {

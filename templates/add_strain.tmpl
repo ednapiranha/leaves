@@ -1,0 +1,16 @@
+<h1>Add a Strain</h1>
+
+<section class="strain">
+  <form method="post" action="/add/strain">
+    <div>
+      <label for="name">name: </label>
+      <input type="text" name="name" value="">
+    </div>
+    <div>
+      <label for="ucpc">ucpc: </label>
+      <input type="text" name="ucpc" value="">
+    </div>
+    {{.csrfField}}
+    <button type="submit">add</button>
+  </form>
+</section>
